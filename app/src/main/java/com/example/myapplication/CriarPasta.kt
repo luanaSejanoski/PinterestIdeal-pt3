@@ -45,6 +45,7 @@ import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.Switch
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -53,12 +54,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import coil.compose.rememberAsyncImagePainter
 import com.example.myapplication.data.Dados
 import com.example.myapplication.data.Pasta
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 @Preview(showBackground = true)
 @Composable
@@ -80,6 +85,17 @@ fun TelaCriarPasta(navController: NavController, idUsuario: Int = 0){
     var nomePasta by remember { mutableStateOf("") }
     var privado by remember { mutableStateOf(false) }
     var nomeFocado by remember { mutableStateOf(false) }
+
+    val context = LocalContext.current
+    val db = AppDatabase.getDatabase(context)
+    val pastaDAO = db.pastaDAO()
+    var pastaCriada by remember { mutableStateOf(false) }
+
+    LaunchedEffect(pastaCriada) {
+        if(pastaCriada) navController.navigate(Rotas.HOME)
+    }
+
+
 
     Surface(
         modifier = Modifier.fillMaxSize(),
@@ -214,14 +230,13 @@ fun TelaCriarPasta(navController: NavController, idUsuario: Int = 0){
                 }
 
 
-
-                val novaPasta = Pasta( statusPrivado = privado ,nome = nomePasta)
-
                 BtnCriarPasta(
                     modifier = Modifier.align(Alignment.BottomCenter),
                     onClick = {
-                        Dados.pastas.add(novaPasta)
-                        navController.navigate(Rotas.HOME)
+                       CoroutineScope(Dispatchers.IO).launch {
+                           criarPasta(privado = privado ,nome = nomePasta, usuarioId = usuario.id, pastaDAO = pastaDAO)
+                       }
+                        pastaCriada = true
                     },
                     habilitado = nomePasta.isNotBlank()
 

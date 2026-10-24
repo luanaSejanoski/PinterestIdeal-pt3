@@ -90,17 +90,15 @@ fun PreviewTelaPerfil() {
 fun gararPasta(pasta: Pasta, pastaDAO: PastaDAO, onclick: () -> Unit){
 
     var totalPinsPasta by remember { mutableStateOf(0) }
+    var pins by remember { mutableStateOf<List<Pin>>(emptyList()) }
 
     LaunchedEffect(pasta.id) {
-        totalPinsPasta = pastaDAO.contarPins(pasta.id)
+        CoroutineScope(Dispatchers.IO).launch {
+            totalPinsPasta = contarPinsPasta(pastaDAO,pasta.id)
+            pins = buscarDoisUltimosPins(pastaDAO, pasta.id)
+        }
     }
 
-    //pega os dois ultimos pins
-    val pins = Dados.pins
-        .filter{ pin ->
-        pin.id in pasta.pins}
-        .reversed()
-        .take(2)
 
     //pega a imagem dos dois ultimos pins
     val imagens = pins.map{pin -> pin.imagem}
@@ -181,7 +179,7 @@ fun TelaPerfil(navController: NavHostController, idUsuario: Int = 0) {
     var pastasDoUsuario by remember { mutableStateOf<List<Pasta>>(emptyList()) }
     var totalAmigos by remember{mutableStateOf(0)}
 
-    LaunchedEffect(idUsuario) {
+    LaunchedEffect(Unit) {
         CoroutineScope(Dispatchers.IO).launch {
             pastasDoUsuario = buscarPastas(pastaDAO, idUsuario)
             totalAmigos = usuarioDAO.contarAmigos(idUsuario)
