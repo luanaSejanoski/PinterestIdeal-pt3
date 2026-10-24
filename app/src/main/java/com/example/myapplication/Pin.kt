@@ -1,10 +1,12 @@
 package com.example.myapplication
 
 import android.net.Uri
+import androidx.room3.PrimaryKey
 
 data class Pin(
-    val id: Int,
-    val imagem: Uri,
+    @PrimaryKey(autoGenerate = true)
+    val id: Int = 0,
+    val imagem: String,
     val largura: Int,
     val altura: Int
 )

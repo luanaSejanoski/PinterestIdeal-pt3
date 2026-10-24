@@ -1,5 +1,6 @@
 package com.example.myapplication
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -33,8 +34,15 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import coil.compose.rememberAsyncImagePainter
@@ -42,6 +50,9 @@ import com.example.myapplication.data.Dados
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.myapplication.data.Pasta
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 @Composable
 fun gerarBotao(x: Float,
@@ -74,8 +85,15 @@ fun PreviewTelaPerfil() {
         )
 }
 
+@SuppressLint("CoroutineCreationDuringComposition")
 @Composable
-fun gararPasta(pasta: Pasta,  onclick: () -> Unit){
+fun gararPasta(pasta: Pasta, pastaDAO: PastaDAO, onclick: () -> Unit){
+
+    var totalPinsPasta by remember { mutableStateOf(0) }
+
+    LaunchedEffect(pasta.id) {
+        totalPinsPasta = pastaDAO.contarPins(pasta.id)
+    }
 
     //pega os dois ultimos pins
     val pins = Dados.pins
@@ -141,7 +159,7 @@ fun gararPasta(pasta: Pasta,  onclick: () -> Unit){
                 fontSize = 14.sp
             )
             Text(
-                text = "${pasta.pins.size} Pins",
+                text = "$totalPinsPasta Pins",
                 color = Color.White,
                 fontSize = 12.sp
             )
@@ -155,6 +173,20 @@ fun gararPasta(pasta: Pasta,  onclick: () -> Unit){
 fun TelaPerfil(navController: NavHostController, idUsuario: Int = 0) {
 
     val usuario = Dados.usuarios.find { it.id == idUsuario }?: return
+    val context = LocalContext.current
+    val db = AppDatabase.getDatabase(context)
+    val pastaDAO = db.pastaDAO()
+    val usuarioDAO = db.usuarioDAO()
+
+    var pastasDoUsuario by remember { mutableStateOf<List<Pasta>>(emptyList()) }
+    var totalAmigos by remember{mutableStateOf(0)}
+
+    LaunchedEffect(idUsuario) {
+        CoroutineScope(Dispatchers.IO).launch {
+            pastasDoUsuario = buscarPastas(pastaDAO, idUsuario)
+            totalAmigos = usuarioDAO.contarAmigos(idUsuario)
+        }
+    }
 
     Surface(
         modifier = Modifier.fillMaxSize(),
@@ -203,7 +235,7 @@ fun TelaPerfil(navController: NavHostController, idUsuario: Int = 0) {
                         verticalArrangement = Arrangement.spacedBy(10.dp)
                     ) {
                         Text(
-                            text = "${usuario.amigos?.size} amigos",
+                            text = "$totalAmigos amigos",
                             color = Color.White,
                             fontSize = 18.sp,
                             fontWeight = FontWeight.Bold,
@@ -269,7 +301,8 @@ fun TelaPerfil(navController: NavHostController, idUsuario: Int = 0) {
                 modifier = Modifier.fillMaxSize()
             ) {
 
-                val pastasDoUsuario = Dados.pastas.filter { it.id in usuario.pastas }
+
+
                 items(pastasDoUsuario.chunked(2)){ linha ->
                     Row(
                         modifier = Modifier.fillMaxWidth()
@@ -294,6 +327,7 @@ fun TelaPerfil(navController: NavHostController, idUsuario: Int = 0) {
                                     ) {
                                         gararPasta(
                                             pasta,
+                                            pastaDAO,
                                             onclick = {
                                                 navController.navigate(
                                                     Rotas.DETALHES_PASTA.replace(

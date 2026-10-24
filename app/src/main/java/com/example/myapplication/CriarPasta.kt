@@ -58,7 +58,6 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import coil.compose.rememberAsyncImagePainter
 import com.example.myapplication.data.Dados
-import com.example.myapplication.data.Dados.proximoIdPasta
 import com.example.myapplication.data.Pasta
 
 @Preview(showBackground = true)
@@ -215,14 +214,13 @@ fun TelaCriarPasta(navController: NavController, idUsuario: Int = 0){
                 }
 
 
-                val novoId = proximoIdPasta()
-                val novaPasta = Pasta(id = novoId, statusPrivado = privado ,nome = nomePasta)
+
+                val novaPasta = Pasta( statusPrivado = privado ,nome = nomePasta)
 
                 BtnCriarPasta(
                     modifier = Modifier.align(Alignment.BottomCenter),
                     onClick = {
                         Dados.pastas.add(novaPasta)
-                        usuario.pastas.add(novoId)
                         navController.navigate(Rotas.HOME)
                     },
                     habilitado = nomePasta.isNotBlank()
