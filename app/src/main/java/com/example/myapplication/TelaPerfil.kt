@@ -298,9 +298,6 @@ fun TelaPerfil(navController: NavHostController, idUsuario: Int = 0) {
             LazyColumn(
                 modifier = Modifier.fillMaxSize()
             ) {
-
-
-
                 items(pastasDoUsuario.chunked(2)){ linha ->
                     Row(
                         modifier = Modifier.fillMaxWidth()

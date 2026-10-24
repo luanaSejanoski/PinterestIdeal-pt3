@@ -9,6 +9,6 @@ import androidx.room3.Query
 interface PinDAO {
     @Insert suspend fun adicionar(pin: Pin) : Long
 
-    @Query("DELETE FROM Pin WHERE id NOT IN (SELECT PinId FROM PastaPin")
+    @Query("DELETE FROM Pin WHERE id NOT IN (SELECT PinId FROM PastaPin)")
     suspend fun excluirPin()
 }

@@ -19,6 +19,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -27,12 +28,17 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import androidx.core.net.toUri
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import com.example.myapplication.data.Dados
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -40,6 +46,21 @@ import com.example.myapplication.data.Dados
 @Composable
 fun TelaVerPastaUsuario(navController: NavController, idPasta: Int?) {
     val pasta = Dados.pastas.find{it.id == idPasta}?: return
+
+    val context = LocalContext.current
+    val db = AppDatabase.getDatabase(context)
+    val pastaDAO = db.pastaDAO()
+    val pinDAO = db.pinDAO()
+
+    var totalPinsPasta by remember { mutableStateOf(0) }
+    var pins by remember { mutableStateOf<List<Pin>>(emptyList()) }
+
+    LaunchedEffect(pasta.id) {
+        CoroutineScope(Dispatchers.IO).launch {
+            totalPinsPasta = contarPinsPasta(pastaDAO,pasta.id)
+            pins = buscarPinsPasta(pastaDAO, pasta.id)
+        }
+    }
 
     Scaffold(
         topBar = {
@@ -93,7 +114,7 @@ fun TelaVerPastaUsuario(navController: NavController, idPasta: Int?) {
                                 }
                                 Row() {
                                     Text(
-                                        text = "${pasta.pins.size} Pins",
+                                        text = "$totalPinsPasta Pins",
                                         color = Color.White
                                     )
                                 }
@@ -106,8 +127,8 @@ fun TelaVerPastaUsuario(navController: NavController, idPasta: Int?) {
 
                     val colunaEsquerda = mutableListOf<Pin>()
                     val colunaDireita = mutableListOf<Pin>()
-                    val pinsDaPasta = Dados.pins.filter { pin -> pin.id in pasta.pins }
-                    organizaImagensColuna(pinsDaPasta, colunaEsquerda, colunaDireita)
+
+                    organizaImagensColuna(pins, colunaEsquerda, colunaDireita)
 
 
                     //área das imagens
@@ -125,14 +146,11 @@ fun TelaVerPastaUsuario(navController: NavController, idPasta: Int?) {
                             verticalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
                             colunaEsquerda.forEach { item ->
-                                println("URI DA IMAGEM: ${item.imagem}")
-                                println("LARGURA: ${item.largura}")
-                                println("ALTURA: ${item.altura}")
                                 // Define a proporção da imagem para que ela mantenha suas medidas originais na tela
-                                val proporcao =
-                                    item.largura.toFloat() / item.altura.toFloat()
-                                gerarBlocoImagem(item.imagem, proporcao,
-                                    onClick = {imagemAmpliada = item.imagem},
+                                val proporcao = item.largura.toFloat() / item.altura.toFloat()
+
+                                gerarBlocoImagem(item.imagem.toUri(), proporcao,
+                                    onClick = {imagemAmpliada = item.imagem.toUri()},
                                     )
                             }
                         }
@@ -143,8 +161,8 @@ fun TelaVerPastaUsuario(navController: NavController, idPasta: Int?) {
                             colunaDireita.forEach { item ->
                                 val proporcao =
                                     item.largura.toFloat() / item.altura.toFloat()
-                                gerarBlocoImagem(item.imagem, proporcao,
-                                    onClick = {imagemAmpliada = item.imagem},
+                                gerarBlocoImagem(item.imagem.toUri(), proporcao,
+                                    onClick = {imagemAmpliada = item.imagem.toUri()},
                                 )
                             }
                         }

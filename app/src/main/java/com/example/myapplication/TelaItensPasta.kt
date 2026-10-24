@@ -219,7 +219,6 @@ fun TelaItensPasta(navController: NavController,idPasta: Int = 0) {
                 val altura = drawable?.intrinsicHeight ?: 0
 
 
-
                 CoroutineScope(Dispatchers.IO).launch {
                   val novoPinId = adicionarPin(uri.toString(), largura, altura, pinDAO)
                     adicionarPinNaPasta(novoPinId, pasta.id, pastaDAO)

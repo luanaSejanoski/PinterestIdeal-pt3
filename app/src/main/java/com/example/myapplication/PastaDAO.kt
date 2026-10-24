@@ -11,7 +11,7 @@ import com.example.myapplication.data.Pasta
 interface PastaDAO {
     @Insert suspend fun criar(pasta: Pasta)
 
-    @Insert suspend fun vincular(ligacao: PastaPin): Int
+    @Insert suspend fun vincular(ligacao: PastaPin)
 
     @Query("SELECT * FROM Pasta WHERE usuarioId = :usuarioId")
     suspend fun pastasDoUsuario(usuarioId: Int): List<Pasta>
@@ -38,11 +38,11 @@ interface PastaDAO {
 
     @Delete suspend fun excluir(pasta: Pasta)
 
-    @Query("SELECT * FROM PastaPin WHERE pastaId = :idPasta")
+    @Query("DELETE FROM PastaPin WHERE pastaId = :idPasta")
     suspend fun excluirLigacao(idPasta: Int)
 
     @Query("UPDATE Pasta SET nome = :novoNome WHERE id = :idPasta")
-    @Update suspend fun mudarNome(novoNome: String, idPasta: Int)
+    suspend fun mudarNome(novoNome: String, idPasta: Int)
 
     @Query("DELETE FROM PastaPin WHERE pastaId = :idPasta AND pinId = :idPin")
     suspend fun excluirPinPasta(idPasta: Int, idPin: Int)

@@ -28,11 +28,17 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -41,11 +47,30 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import coil.compose.rememberAsyncImagePainter
 import com.example.myapplication.data.Dados
+import com.example.myapplication.data.Pasta
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 @Composable
 fun TelaVerPerfilUsuario(navController: NavHostController, idUsuario: Int = 1){
 
     val usuario = Dados.usuarios.find { it.id == idUsuario }?: return
+
+    val context = LocalContext.current
+    val db = AppDatabase.getDatabase(context)
+    val pastaDAO = db.pastaDAO()
+    val usuarioDAO = db.usuarioDAO()
+
+    var pastasDoUsuario by remember { mutableStateOf<List<Pasta>>(emptyList()) }
+    var totalAmigos by remember{mutableStateOf(0)}
+
+    LaunchedEffect(idUsuario) {
+        CoroutineScope(Dispatchers.IO).launch {
+            pastasDoUsuario = buscarPastas(pastaDAO, idUsuario)
+            totalAmigos = usuarioDAO.contarAmigos(idUsuario)
+        }
+    }
 
     Surface(
         modifier = Modifier.fillMaxSize(),
@@ -114,7 +139,7 @@ fun TelaVerPerfilUsuario(navController: NavHostController, idUsuario: Int = 1){
                         verticalArrangement = Arrangement.spacedBy(10.dp)
                     ) {
                         Text(
-                            text = "${usuario.amigos?.size} amigos",
+                            text = "$totalAmigos amigos",
                             color = Color.White,
                             fontSize = 18.sp,
                             fontWeight = FontWeight.Bold,
@@ -158,7 +183,7 @@ fun TelaVerPerfilUsuario(navController: NavHostController, idUsuario: Int = 1){
             LazyColumn(
                 modifier = Modifier.fillMaxSize()
             ) {
-                val pastasDoUsuario = Dados.pastas.filter { it.id in usuario.pastas }
+//                val pastasDoUsuario = Dados.pastas.filter { it.id in usuario.pastas }
                 items(pastasDoUsuario.chunked(2)){ linha ->
                     Row(
                         modifier = Modifier.fillMaxWidth()
@@ -182,6 +207,7 @@ fun TelaVerPerfilUsuario(navController: NavHostController, idUsuario: Int = 1){
                                     ) {
                                         gararPasta(
                                             pasta,
+                                            pastaDAO,
                                             onclick = {
                                                 navController.navigate(
                                                     Rotas.VER_PASTA_USUARIO.replace(
