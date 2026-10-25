@@ -143,7 +143,7 @@ fun salvarNomePasta(
     pastaDAO: PastaDAO
 ){
     CoroutineScope(Dispatchers.IO).launch {
-        mudarNomePasta(nomePasta, pasta.id, pastaDAO)
+        mudarNomePasta(nomePasta, pasta, pastaDAO)
     }
 }
 
@@ -153,7 +153,7 @@ fun salvarTituloPin(
     pinDAO: PinDAO
 ){
     CoroutineScope(Dispatchers.IO).launch {
-        alterarTituloPin(tituloPin, pin.id, pinDAO)
+        alterarTituloPin(tituloPin, pin, pinDAO)
     }
 }
 

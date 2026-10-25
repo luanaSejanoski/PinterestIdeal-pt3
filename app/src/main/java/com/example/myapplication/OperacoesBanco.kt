@@ -56,9 +56,10 @@ suspend fun excluirPasta(pasta: Pasta, pastaDAO: PastaDAO){
     }
 }
 
-suspend fun mudarNomePasta(novoNome: String, idPasta: Int, pastaDAO: PastaDAO){
+suspend fun mudarNomePasta(novoNome: String, pasta: Pasta, pastaDAO: PastaDAO){
     try{
-        pastaDAO.mudarNome(novoNome, idPasta)
+        pasta.nome = novoNome
+        pastaDAO.mudarNome(pasta)
     }catch (e: Exception){
         Log.e("Erro ao mudar o nome da pasta...", "Msg ${e.message}")
     }
@@ -89,7 +90,7 @@ suspend fun excluirPinDaPasta(pinId: Int, pastaId: Int, pastaDAO: PastaDAO, pinD
         pastaDAO.excluirPinPasta(pastaId, pinId)
 
         if(pastaDAO.contarPastasPin(pinId) == 0){
-            pinDAO.excluirPin()
+            pinDAO.excluirPin(pinDAO.pinsSemPasta())
         }
     }catch (e: Exception){
         Log.e("Erro ao excluir o pin da pasta...", "Msg ${e.message}")
@@ -97,9 +98,10 @@ suspend fun excluirPinDaPasta(pinId: Int, pastaId: Int, pastaDAO: PastaDAO, pinD
     }
 }
 
-suspend fun alterarTituloPin(novoTitulo: String, pinId: Int, pinDAO: PinDAO){
+suspend fun alterarTituloPin(novoTitulo: String, pin:Pin, pinDAO: PinDAO){
     try{
-        pinDAO.editar(pinId, novoTitulo)
+        pin.titulo = novoTitulo
+        pinDAO.editar(pin)
     }catch (e: Exception){
         Log.e("Erro ao mudar o título do pin...", "Msg ${e.message}")
 

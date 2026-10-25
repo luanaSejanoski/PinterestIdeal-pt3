@@ -149,7 +149,7 @@ fun TelaVerPastaUsuario(navController: NavController, idPasta: Int?) {
                                 // Define a proporção da imagem para que ela mantenha suas medidas originais na tela
                                 val proporcao = item.largura.toFloat() / item.altura.toFloat()
 
-                                gerarBlocoImagem(item.imagem.toUri(), proporcao,
+                                gerarBlocoImagem(item, proporcao,
                                     onClick = {imagemAmpliada = item.imagem.toUri()},
                                     )
                             }
@@ -161,7 +161,7 @@ fun TelaVerPastaUsuario(navController: NavController, idPasta: Int?) {
                             colunaDireita.forEach { item ->
                                 val proporcao =
                                     item.largura.toFloat() / item.altura.toFloat()
-                                gerarBlocoImagem(item.imagem.toUri(), proporcao,
+                                gerarBlocoImagem(item, proporcao,
                                     onClick = {imagemAmpliada = item.imagem.toUri()},
                                 )
                             }

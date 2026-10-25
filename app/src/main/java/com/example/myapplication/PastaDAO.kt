@@ -36,13 +36,9 @@ interface PastaDAO {
         """)
     suspend fun doisUltimosPins(idPasta: Int): List<Pin>
 
-    @Delete suspend fun excluir(pasta: Pasta)
-
     @Query("DELETE FROM PastaPin WHERE pastaId = :idPasta")
     suspend fun excluirLigacao(idPasta: Int)
 
-    @Query("UPDATE Pasta SET nome = :novoNome WHERE id = :idPasta")
-    suspend fun mudarNome(novoNome: String, idPasta: Int)
 
     @Query("DELETE FROM PastaPin WHERE pastaId = :idPasta AND pinId = :idPin")
     suspend fun excluirPinPasta(idPasta: Int, idPin: Int)
@@ -50,5 +46,9 @@ interface PastaDAO {
     @Query("SELECT COUNT(*) FROM PastaPin WHERE pinId = :idPin")
     suspend fun contarPastasPin(idPin: Int): Int
 
+    @Delete suspend fun excluir(pasta: Pasta)
+
+    @Update
+    suspend fun mudarNome(pasta: Pasta)
 
 }
