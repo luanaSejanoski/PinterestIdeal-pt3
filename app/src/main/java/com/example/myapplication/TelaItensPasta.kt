@@ -22,6 +22,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
@@ -89,7 +90,7 @@ fun gerarBlocoIcone(cor: Color? = null,
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun gerarBlocoImagem(
-    imagem: Uri,
+    pin: Pin,
     proporcao: Float,
     onClick: () -> Unit = {},
     onLongClick: () -> Unit = {}
@@ -103,7 +104,7 @@ fun gerarBlocoImagem(
         )
     ){
         Image(
-            painter = rememberAsyncImagePainter(imagem),
+            painter = rememberAsyncImagePainter(pin.imagem.toUri()),
             contentDescription = null,
             modifier = Modifier
                 .fillMaxWidth()
@@ -143,6 +144,16 @@ fun salvarNomePasta(
 ){
     CoroutineScope(Dispatchers.IO).launch {
         mudarNomePasta(nomePasta, pasta.id, pastaDAO)
+    }
+}
+
+fun salvarTituloPin(
+    pin: Pin,
+    tituloPin: String,
+    pinDAO: PinDAO
+){
+    CoroutineScope(Dispatchers.IO).launch {
+        alterarTituloPin(tituloPin, pin.id, pinDAO)
     }
 }
 
@@ -199,9 +210,9 @@ fun TelaItensPasta(navController: NavController,idPasta: Int = 0) {
         var novoNome by remember { mutableStateOf("") }
 
 
-        var imagemAmpliada by remember {mutableStateOf<Uri?>(null)}
-
-
+        var imagemAmpliada by remember {mutableStateOf<Pin?>(null)}
+        var editandoPin by remember { mutableStateOf(false)}
+        var novoTitulo by remember { mutableStateOf("") }
 
         val selecionarImagens = rememberLauncherForActivityResult(
             contract = ActivityResultContracts.GetMultipleContents()
@@ -438,8 +449,8 @@ fun TelaItensPasta(navController: NavController,idPasta: Int = 0) {
                                         // Define a proporção da imagem para que ela mantenha suas medidas originais na tela
                                         val proporcao = item.largura.toFloat() / item.altura.toFloat()
 
-                                        gerarBlocoImagem(item.imagem.toUri(), proporcao,
-                                            onClick = {imagemAmpliada = item.imagem.toUri()},
+                                        gerarBlocoImagem(item, proporcao,
+                                            onClick = {imagemAmpliada = item},
                                             onLongClick = {
                                                 CoroutineScope(Dispatchers.IO).launch {
                                                     excluirPinDaPasta(item.id, pasta.id, pastaDAO, pinDAO)
@@ -459,8 +470,8 @@ fun TelaItensPasta(navController: NavController,idPasta: Int = 0) {
                                     colunaDireita.forEach { item ->
                                         val proporcao = item.largura.toFloat() / item.altura.toFloat()
 
-                                        gerarBlocoImagem(item.imagem.toUri(), proporcao,
-                                            onClick = {imagemAmpliada = item.imagem.toUri()},
+                                        gerarBlocoImagem(item, proporcao,
+                                            onClick = {imagemAmpliada = item},
                                             onLongClick = {
                                                 CoroutineScope(Dispatchers.IO).launch {
                                                     excluirPinDaPasta(item.id, pasta.id, pastaDAO, pinDAO)
@@ -479,20 +490,77 @@ fun TelaItensPasta(navController: NavController,idPasta: Int = 0) {
         }
 
         //amplia a imagem quando clicada
-        imagemAmpliada?.let{imagem ->
+        imagemAmpliada?.let{pin ->
             Dialog(
-                onDismissRequest = {imagemAmpliada = null}
-            ){
-                Image(
-                    painter = rememberAsyncImagePainter(imagem),
-                    contentDescription = null,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable { imagemAmpliada = null },
-                    contentScale = ContentScale.Fit
-                )
+                onDismissRequest = { imagemAmpliada = null}
 
+            ) {
+                Column(
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(12.dp))
+                        .background(Color(0x74525252))
+                        .padding(12.dp)
+                ) {
+                    Image(
+                        painter = rememberAsyncImagePainter(pin.imagem),
+                        contentDescription = null,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .heightIn(max = 450.dp)
+                            .clickable {
+                                imagemAmpliada = null
+                            },
+                        contentScale = ContentScale.Fit
+                    )
+
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 8.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text(
+                            text = if (pin.titulo.isNotBlank()) pin.titulo else "Sem título",
+                            color = if (pin.titulo.isNotBlank()) Color.White else Color.Gray,
+                            modifier = Modifier.weight(1f)
+                        )
+                        gerarBlocoIcone(
+                            Color(0xFF1E1E1E), 30, 5,
+                            icon = painterResource(R.drawable.editar),
+                            onClick = {
+                                novoTitulo = pin.titulo
+                                editandoPin = true
+                            }
+                        )
+                    }
+                }
             }
+        }
+        if (editandoPin) {
+            AlertDialog(
+                onDismissRequest = { editandoPin = false },
+                title = { Text("Editar título") },
+                text = {
+                    TextField(
+                        value = novoTitulo,
+                        onValueChange = { novoTitulo = it },
+                        singleLine = true
+                    )
+                },
+                confirmButton = {
+                    TextButton(onClick = {
+                        imagemAmpliada?.let { pin ->
+                            salvarTituloPin(pin, novoTitulo, pinDAO)
+                            imagemAmpliada = pin.copy(titulo = novoTitulo)
+                        }
+                        editandoPin = false
+                    }) { Text("Salvar") }
+                },
+                dismissButton = {
+                    TextButton(onClick = { editandoPin = false }) { Text("Cancelar") }
+                }
+            )
         }
     }
 }

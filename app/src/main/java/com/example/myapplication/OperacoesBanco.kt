@@ -64,7 +64,17 @@ suspend fun mudarNomePasta(novoNome: String, idPasta: Int, pastaDAO: PastaDAO){
     }
 }
 
+suspend fun adicionarPinNaPasta(pinId: Int, pastaId: Int, pastaDAO: PastaDAO){
+    try{
+        pastaDAO.vincular(PastaPin(pastaId, pinId))
+    }catch(e: Exception){
+        Log.e("Erro ao adicionar o pin na pasta...", "Msg ${e.message}")
+    }
+}
 
+
+
+//Operações Pin
 suspend fun adicionarPin(uri: String, largura: Int, altura: Int, pinDAO: PinDAO): Int{
    return try {
         pinDAO.adicionar(Pin(imagem = uri, largura = largura, altura = altura)).toInt()
@@ -73,13 +83,6 @@ suspend fun adicionarPin(uri: String, largura: Int, altura: Int, pinDAO: PinDAO)
     }
 }
 
-suspend fun adicionarPinNaPasta(pinId: Int, pastaId: Int, pastaDAO: PastaDAO){
-    try{
-        pastaDAO.vincular(PastaPin(pastaId, pinId))
-    }catch(e: Exception){
-        Log.e("Erro ao adicionar o pin na pasta...", "Msg ${e.message}")
-    }
-}
 
 suspend fun excluirPinDaPasta(pinId: Int, pastaId: Int, pastaDAO: PastaDAO, pinDAO: PinDAO){
     try{
@@ -92,6 +95,14 @@ suspend fun excluirPinDaPasta(pinId: Int, pastaId: Int, pastaDAO: PastaDAO, pinD
         Log.e("Erro ao excluir o pin da pasta...", "Msg ${e.message}")
 
     }
+}
 
+suspend fun alterarTituloPin(novoTitulo: String, pinId: Int, pinDAO: PinDAO){
+    try{
+        pinDAO.editar(pinId, novoTitulo)
+    }catch (e: Exception){
+        Log.e("Erro ao mudar o título do pin...", "Msg ${e.message}")
+
+    }
 }
 
