@@ -16,6 +16,9 @@ interface PastaDAO {
     @Query("SELECT * FROM Pasta WHERE usuarioId = :usuarioId")
     suspend fun pastasDoUsuario(usuarioId: Int): List<Pasta>
 
+    @Query("SELECT * FROM Pasta WHERE id = :pastaId")
+    suspend fun buscarPorId(pastaId: Int) : Pasta
+
     //Busca todos os pins que pertencem a pasta selecionada
     @Query("""
         SELECT Pin.* FROM Pin
@@ -27,6 +30,13 @@ interface PastaDAO {
 
     @Query("SELECT COUNT(*) FROM PastaPin WHERE pastaId = :pastaId")
     suspend fun contarPins(pastaId: Int): Int
+
+
+    @Query("SELECT COUNT(*) FROM Pasta")
+    suspend fun contarPastas(): Int
+
+    @Query("SELECT COUNT(*) FROM PastaPin")
+    suspend fun contarRelacaoPastaPin(): Int
 
     @Query("""SELECT Pin.* FROM Pin
         INNER JOIN PastaPin ON Pin.id = PastaPin.pinId
@@ -49,6 +59,6 @@ interface PastaDAO {
     @Delete suspend fun excluir(pasta: Pasta)
 
     @Update
-    suspend fun mudarNome(pasta: Pasta)
+    suspend fun atualizar(pasta: Pasta)
 
 }

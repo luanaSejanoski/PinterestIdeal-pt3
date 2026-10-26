@@ -19,4 +19,7 @@ interface PinDAO {
 
     @Update
     suspend fun editar(pin: Pin)
+
+    @Query("SELECT COUNT(*) FROM Pin")
+    suspend fun contarPins(): Int
 }

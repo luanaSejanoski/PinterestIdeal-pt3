@@ -121,37 +121,40 @@ object Dados {
     )
 
 
+
+
     val pastaPins = listOf(
-        PastaPin(1, 3), PastaPin(1, 4), PastaPin(1, 5),
-        PastaPin(2, 1), PastaPin(2, 2),
-        PastaPin(3, 6), PastaPin(3, 7), PastaPin(3, 8),
-        PastaPin(4, 9), PastaPin(4, 10), PastaPin(4, 11),
-        PastaPin(5, 3), PastaPin(5, 5),
-        PastaPin(6, 4), PastaPin(6, 15),
-        PastaPin(7, 1), PastaPin(7, 16),
-        PastaPin(8, 6), PastaPin(8, 9),
-        PastaPin(9, 12), PastaPin(9, 13),
-        PastaPin(10, 7), PastaPin(10, 8),
-        PastaPin(11, 3), PastaPin(11, 12),
-        PastaPin(12, 4), PastaPin(12, 14),
-        PastaPin(13, 5), PastaPin(13, 13),
-        PastaPin(14, 6), PastaPin(14, 11),
-        PastaPin(15, 9), PastaPin(15, 12),
-        PastaPin(16, 13), PastaPin(16, 15),
-        PastaPin(17, 7), PastaPin(17, 10),
-        PastaPin(18, 8), PastaPin(18, 11),
-        PastaPin(19, 12), PastaPin(19, 16),
-        PastaPin(20, 3), PastaPin(20, 9),
-        PastaPin(21, 6), PastaPin(21, 13),
-        PastaPin(22, 4), PastaPin(22, 15),
-        PastaPin(23, 5), PastaPin(23, 12),
-        PastaPin(24, 10), PastaPin(24, 14),
-        PastaPin(25, 8), PastaPin(25, 16),
-        PastaPin(26, 3), PastaPin(26, 15),
-        PastaPin(27, 4), PastaPin(27, 13),
-        PastaPin(28, 11), PastaPin(28, 17),
-        PastaPin(29, 6), PastaPin(29, 9),
-        PastaPin(30, 7), PastaPin(30, 10),
-        PastaPin(31, 8), PastaPin(31, 12)
+        // Pasta 1: Paisagens
+        PastaPin(1, 15),
+        PastaPin(1, 16),
+        PastaPin(1, 17),
+
+        // Pasta 2: Looks
+        PastaPin(2, 1),
+        PastaPin(2, 2),
+
+        // Pasta 3: Desenhos
+        PastaPin(3, 6),
+        PastaPin(3, 7),
+        PastaPin(3, 8),
+
+        // Pasta 4: Looks & Outfits
+        PastaPin(4, 9),
+        PastaPin(4, 10),
+        PastaPin(4, 11),
+
+        // Pasta 5: Viagens dos Sonhos
+        PastaPin(5, 3),
+        PastaPin(5, 4),
+        PastaPin(5, 5),
+
+        // Pasta 12: Salas Acolhedoras
+        PastaPin(12, 14),
+
+        // Pasta 13: Cozinhas Modernas
+        PastaPin(13, 13),
+
+        // Pasta 15: Projetos Open Source
+        PastaPin(15, 12)
     )
 }

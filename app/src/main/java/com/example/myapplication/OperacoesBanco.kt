@@ -13,6 +13,15 @@ suspend fun buscarPastas(pastaDAO: PastaDAO, usuarioId: Int): List<Pasta> {
     }
 }
 
+suspend fun buscarPastaId(pastaDAO: PastaDAO, pastaId: Int): Pasta{
+    return try{
+        pastaDAO.buscarPorId(pastaId)
+    }catch (e: Exception){
+        Log.e("Erro ao buscar pastas...", "Msg ${e.message}")
+        throw e
+    }
+}
+
 suspend fun buscarPinsPasta(pastaDAO: PastaDAO, pastaId: Int) : List<Pin>{
     return try{
         pastaDAO.pinsDaPasta(pastaId)
@@ -56,10 +65,9 @@ suspend fun excluirPasta(pasta: Pasta, pastaDAO: PastaDAO){
     }
 }
 
-suspend fun mudarNomePasta(novoNome: String, pasta: Pasta, pastaDAO: PastaDAO){
+suspend fun atualizarPasta( pasta: Pasta, pastaDAO: PastaDAO){
     try{
-        pasta.nome = novoNome
-        pastaDAO.mudarNome(pasta)
+        pastaDAO.atualizar(pasta)
     }catch (e: Exception){
         Log.e("Erro ao mudar o nome da pasta...", "Msg ${e.message}")
     }

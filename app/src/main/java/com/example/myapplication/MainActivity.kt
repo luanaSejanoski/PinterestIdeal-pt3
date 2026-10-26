@@ -9,6 +9,8 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.compose.rememberNavController
 import com.example.myapplication.ui.theme.MyApplicationTheme
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 class MainActivity : ComponentActivity() {
 
@@ -21,6 +23,17 @@ class MainActivity : ComponentActivity() {
             LaunchedEffect(Unit) {
                 carregarDadosBanco(AppDatabase.getDatabase(context))
             }
+//
+//            LaunchedEffect(Unit) {
+//                val db = AppDatabase.getDatabase(context)
+//
+//                // Apaga os dados de todas as tabelas do Room
+//                withContext(Dispatchers.IO) {
+//                    db.clearAllTables()
+//                }
+//
+//
+//            }
 
             MyApplicationTheme {
                 val navController = rememberNavController()

@@ -16,6 +16,9 @@ interface UsuarioDAO {
     @Query("SELECT COUNT(*) FROM Usuario")
     suspend fun contarUsuarios(): Int
 
+    @Query("SELECT COUNT(*) FROM UsuarioAmigo")
+    suspend fun contarAmizades(): Int
+
     @Query(" SELECT * FROM Usuario WHERE id > 0")
     suspend fun listarTodosUsuarios() : List<Usuario>
 

@@ -1,5 +1,6 @@
 package com.example.myapplication
 
+import android.annotation.SuppressLint
 import android.graphics.drawable.Drawable
 import android.net.Uri
 import androidx.compose.ui.window.Dialog
@@ -63,6 +64,7 @@ import com.example.myapplication.data.Pasta
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 @Composable
 fun gerarBlocoIcone(cor: Color? = null,
@@ -143,7 +145,20 @@ fun salvarNomePasta(
     pastaDAO: PastaDAO
 ){
     CoroutineScope(Dispatchers.IO).launch {
-        mudarNomePasta(nomePasta, pasta, pastaDAO)
+        pasta.nome = nomePasta
+        atualizarPasta(pasta, pastaDAO)
+    }
+}
+
+fun alterarVisibilidade(
+    pasta: Pasta,
+    privado: Boolean,
+    pastaDAO: PastaDAO
+){
+    CoroutineScope(Dispatchers.IO).launch {
+        pasta.statusPrivado = privado
+        pasta.privado = privado
+        atualizarPasta(pasta, pastaDAO)
     }
 }
 
@@ -167,26 +182,48 @@ fun PreviewTelaItensPasta() {
 
         )
 }
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 
+
+@SuppressLint("UnrememberedMutableState", "SuspiciousIndentation")
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun TelaItensPasta(navController: NavController,idPasta: Int = 0) {
 
-    val pasta = Dados.pastas.find{it.id == idPasta}?: return
     val context = LocalContext.current
     val db = AppDatabase.getDatabase(context)
     val pastaDAO = db.pastaDAO()
     val pinDAO = db.pinDAO()
+    var pasta by remember {mutableStateOf<Pasta?>(null)}
+
 
     var totalPinsPasta by remember { mutableStateOf(0) }
     var pins by remember { mutableStateOf<List<Pin>>(emptyList()) }
 
-    LaunchedEffect(pasta.id) {
-        CoroutineScope(Dispatchers.IO).launch {
-            totalPinsPasta = contarPinsPasta(pastaDAO,pasta.id)
-            pins = buscarPinsPasta(pastaDAO, pasta.id)
+    suspend fun atualizarPins(idPasta: Int) {
+        val total = contarPinsPasta(pastaDAO, idPasta)
+        val lista = buscarPinsPasta(pastaDAO, idPasta)
+
+        withContext(Dispatchers.Main) {
+            totalPinsPasta = total
+            pins = lista
         }
     }
+
+
+    LaunchedEffect(idPasta) {
+        CoroutineScope(Dispatchers.IO).launch {
+            val pastaEncontrada = buscarPastaId(pastaDAO, idPasta)
+
+            withContext(Dispatchers.Main) {
+                pasta = pastaEncontrada
+            }
+
+            atualizarPins(idPasta)
+        }
+    }
+
+    val pastaAtual = pasta ?: return
+
 
     Scaffold(
         topBar = {
@@ -204,7 +241,9 @@ fun TelaItensPasta(navController: NavController,idPasta: Int = 0) {
         }
     ) { paddingValues ->
 
-        var nomePasta by remember { mutableStateOf(pasta.nome) }
+        var nomePasta by remember { mutableStateOf(pastaAtual.nome) }
+        var privacidadePasta by remember { mutableStateOf(pastaAtual.privado) }
+
         var mostrarDialogoMudarNome by remember { mutableStateOf(false) }
         var mostrarDialogoExcluir by remember { mutableStateOf(false) }
         var novoNome by remember { mutableStateOf("") }
@@ -215,10 +254,16 @@ fun TelaItensPasta(navController: NavController,idPasta: Int = 0) {
         var novoTitulo by remember { mutableStateOf("") }
 
         val selecionarImagens = rememberLauncherForActivityResult(
-            contract = ActivityResultContracts.GetMultipleContents()
+            contract = ActivityResultContracts.OpenMultipleDocuments()
         ) { uris ->
 
             uris.forEach { uri ->
+
+                context.contentResolver.takePersistableUriPermission(
+                    uri,
+                    android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION
+                )
+
 
                 val drawable = context.contentResolver
                     .openInputStream(uri)
@@ -232,7 +277,8 @@ fun TelaItensPasta(navController: NavController,idPasta: Int = 0) {
 
                 CoroutineScope(Dispatchers.IO).launch {
                   val novoPinId = adicionarPin(uri.toString(), largura, altura, pinDAO)
-                    adicionarPinNaPasta(novoPinId, pasta.id, pastaDAO)
+                    adicionarPinNaPasta(novoPinId, idPasta, pastaDAO)
+                    atualizarPins(idPasta)
                 }
             }
         }
@@ -303,7 +349,7 @@ fun TelaItensPasta(navController: NavController,idPasta: Int = 0) {
                                                         onClick = {
                                                             nomePasta = novoNome
                                                             mostrarDialogoMudarNome = false
-                                                            salvarNomePasta(pasta, nomePasta, pastaDAO)
+                                                            salvarNomePasta(pastaAtual, nomePasta, pastaDAO)
                                                         }
                                                     ) {
                                                         Text("Salvar")
@@ -336,7 +382,11 @@ fun TelaItensPasta(navController: NavController,idPasta: Int = 0) {
                                                     .combinedClickable(
                                                         onClick = {},
                                                         onLongClick = {
-                                                            pasta.privado = !pasta.privado
+
+                                                            CoroutineScope(Dispatchers.IO).launch{
+                                                                privacidadePasta = !privacidadePasta
+                                                                alterarVisibilidade(pastaAtual, privacidadePasta, pastaDAO)
+                                                            }
                                                             Toast.makeText(
                                                                 context,
                                                                 "Visibilidade da pasta alterada!",
@@ -348,11 +398,11 @@ fun TelaItensPasta(navController: NavController,idPasta: Int = 0) {
                                                 horizontalArrangement = Arrangement.SpaceBetween,
                                             ) {
                                                 gerarBlocoIcone(x = 23, y = 5,
-                                                    icon = painterResource( if(pasta.privado) R.drawable.pasta_privada else R.drawable.pasta_publica)
+                                                    icon = painterResource( if(privacidadePasta) R.drawable.pasta_privada else R.drawable.pasta_publica)
                                                 )
 
                                                 Text(
-                                                    text = if(pasta.privado) "Pasta privada" else "Pasta pública",
+                                                    text = if(privacidadePasta) "Pasta privada" else "Pasta pública",
                                                     color = Color.White,
                                                 )
                                             }
@@ -371,7 +421,7 @@ fun TelaItensPasta(navController: NavController,idPasta: Int = 0) {
                                         30,
                                         5,
                                         icon = painterResource(R.drawable.carregar_imagem),
-                                        onClick = { selecionarImagens.launch("image/*") }
+                                        onClick = { selecionarImagens.launch(arrayOf("image/*")) }
                                     )
                                     gerarBlocoIcone(
                                         Color(0xFF1e1e1e),
@@ -395,7 +445,7 @@ fun TelaItensPasta(navController: NavController,idPasta: Int = 0) {
                                                         mostrarDialogoExcluir = false
 
                                                         CoroutineScope(Dispatchers.IO).launch {
-                                                            excluirPasta(pasta, pastaDAO )
+                                                            excluirPasta(pastaAtual, pastaDAO )
                                                         }
 
                                                         Toast.makeText(
@@ -453,7 +503,8 @@ fun TelaItensPasta(navController: NavController,idPasta: Int = 0) {
                                             onClick = {imagemAmpliada = item},
                                             onLongClick = {
                                                 CoroutineScope(Dispatchers.IO).launch {
-                                                    excluirPinDaPasta(item.id, pasta.id, pastaDAO, pinDAO)
+                                                    excluirPinDaPasta(item.id, idPasta, pastaDAO, pinDAO)
+                                                    atualizarPins(idPasta)
                                                 }
                                                 Toast.makeText(
                                                     context,
@@ -474,7 +525,7 @@ fun TelaItensPasta(navController: NavController,idPasta: Int = 0) {
                                             onClick = {imagemAmpliada = item},
                                             onLongClick = {
                                                 CoroutineScope(Dispatchers.IO).launch {
-                                                    excluirPinDaPasta(item.id, pasta.id, pastaDAO, pinDAO)
+                                                    excluirPinDaPasta(item.id, idPasta, pastaDAO, pinDAO)
                                                 }
                                                 Toast.makeText(
                                                     context,
