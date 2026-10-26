@@ -34,6 +34,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -49,6 +50,9 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.myapplication.data.Dados
 import com.example.myapplication.ui.theme.MyApplicationTheme
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 //class VerAmigos : ComponentActivity() {
 //    override fun onCreate(savedInstanceState: Bundle?) {
@@ -67,10 +71,18 @@ import com.example.myapplication.ui.theme.MyApplicationTheme
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TelaVerAmigos(navController: NavController, idUsuario: Int = 0){
-    val usuario = Dados.usuarios.find{it.id == idUsuario}?: return
-
-    var listaAmigosIds by remember { mutableStateOf(usuario.amigos.toMutableList()) }
+    val usuario = Dados.usuarios.find { it.id == idUsuario } ?: return
     val context = LocalContext.current
+    val db = AppDatabase.getDatabase(context)
+    val usuarioDAO = db.usuarioDAO()
+
+    var amigos by remember { mutableStateOf<List<Usuario>>(emptyList()) }
+
+    LaunchedEffect(idUsuario) {
+        CoroutineScope(Dispatchers.IO).launch {
+            amigos = usuarioDAO.buscarAmigos(idUsuario)
+        }
+    }
 
     Surface(
         modifier = Modifier.fillMaxSize(),
@@ -104,17 +116,12 @@ fun TelaVerAmigos(navController: NavController, idUsuario: Int = 0){
                 Spacer(modifier = Modifier.height(10.dp))
 
                 BarraPesquisaAmigos(
-                    usuarioLogado = usuario,
-                    idsAmigos = listaAmigosIds,
+                    amigos = amigos,
                     onRemoverAmigo = { amigoId ->
-                        val amigoRemovido = Dados.usuarios.find { it.id == amigoId }
-                        usuario.amigos.remove(amigoId)
-                        listaAmigosIds = usuario.amigos.toMutableList()
-                        Toast.makeText(
-                            context,
-                            "Removendo ${amigoRemovido?.nomeExibicao ?: "amigo"}...",
-                            Toast.LENGTH_SHORT
-                        ).show()
+                        CoroutineScope(Dispatchers.IO).launch {
+                            usuarioDAO.removerAmigo(idUsuario, amigoId)
+                            amigos = usuarioDAO.buscarAmigos(idUsuario)
+                        }
                     },
                     onMensagemClick = { amigo ->
                         navController.navigate("chat/${amigo.id}")
@@ -129,18 +136,14 @@ fun TelaVerAmigos(navController: NavController, idUsuario: Int = 0){
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BarraPesquisaAmigos(
-    usuarioLogado: Usuario,
-    idsAmigos: List<Int>,
+    amigos: List<Usuario>,
     onRemoverAmigo: (Int) -> Unit,
     onMensagemClick: (Usuario) -> Unit,
     navController: NavController
 ) {
     var pesquisarP by remember { mutableStateOf("") }
 
-    // 1. Pega apenas os usuários cuja ID está na lista de amigos do usuário logado
-    // e filtra pelo texto digitado na barra de pesquisa
-    val listaAmigos = Dados.usuarios.filter { it.id in idsAmigos }
-    val amigosFiltrados = listaAmigos.filter {
+    val amigosFiltrados = amigos.filter {
         it.nomeExibicao.contains(pesquisarP, ignoreCase = true) ||
                 it.nomeUsuario.contains(pesquisarP, ignoreCase = true)
     }

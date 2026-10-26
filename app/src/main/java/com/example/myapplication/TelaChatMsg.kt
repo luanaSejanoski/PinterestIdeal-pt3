@@ -44,59 +44,74 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.navigation.NavController
 import com.example.myapplication.data.Dados
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 @Composable
 fun TelaMsg(navController: NavController,
-            idAmigo: Int) {
+            idAmigo: Int,
+            idUsuario: Int) {
 
+    val context = LocalContext.current
+    val db = AppDatabase.getDatabase(context)
+    val mensagemDAO = db.mensagemDAO()
+    val usuarioDAO = db.usuarioDAO()
+
+    var mensagens by remember { mutableStateOf<List<Mensagem>>(emptyList()) }
     var mensagem by remember { mutableStateOf("") }
+    var amigo by remember { mutableStateOf<Usuario?>(null) }
 
-    // Lista compartilhada entre telas
-    val mensagens = Dados.mensagens
-
-
-    val remetente = Dados.usuarios.find { it.id == 0 }
-    val destinatario = Dados.usuarios.find { it.id == idAmigo }
-
-    val mensagensConversa = Dados.mensagens.filter { mensagem ->
-        (mensagem.remetente.id == 0 &&
-                mensagem.destinatario.id == idAmigo) ||
-
-                (mensagem.remetente.id == idAmigo &&
-                        mensagem.destinatario.id == 0)
+    LaunchedEffect(idUsuario, idAmigo) {
+        CoroutineScope(Dispatchers.IO).launch {
+            mensagens = mensagemDAO.buscarConversa(idUsuario, idAmigo)
+            amigo = usuarioDAO.buscarUsuarioId(idAmigo)
+        }
     }
+
+//    val remetente = Dados.usuarios.find { it.id == 0 }
+//    val destinatario = Dados.usuarios.find { it.id == idAmigo }
+//
+//    val mensagensConversa = Dados.mensagens.filter { mensagem ->
+//        (mensagem.remetente.id == 0 &&
+//                mensagem.destinatario.id == idAmigo) ||
+//
+//                (mensagem.remetente.id == idAmigo &&
+//                        mensagem.destinatario.id == 0)
+//    }
 
     val listaState = rememberLazyListState()
 
-    var proximoId by remember {
-        mutableIntStateOf(
-            (mensagens.maxOfOrNull { it.id } ?: 0) + 1
-        )
-    }
+//    var proximoId by remember {
+//        mutableIntStateOf(
+//            (mensagens.maxOfOrNull { it.id } ?: 0) + 1
+//        )
+//    }
 
     // Enviar mensagem
     fun enviarMensagem() {
         if (mensagem.isNotBlank()) {
-            if (remetente != null && destinatario != null) {
-                mensagens.add(
+            val texto = mensagem.trim()
+            mensagem = ""
+            CoroutineScope(Dispatchers.IO).launch {
+                mensagemDAO.inserir(
                     Mensagem(
-                        id = proximoId++,
-                        texto = mensagem.trim(),
-                        remetente = remetente,
-                        destinatario = destinatario
+                        texto = texto,
+                        remetenteId = idUsuario,
+                        destinatarioId = idAmigo
                     )
                 )
-
-                mensagem = ""
+                mensagens = mensagemDAO.buscarConversa(idUsuario, idAmigo)
             }
         }
     }
 
     // vai para a mensagem mais recente
-    LaunchedEffect(idAmigo, mensagensConversa.size) {
+    LaunchedEffect(mensagens.size) {
         if (mensagens.isNotEmpty()) {
             listaState.animateScrollToItem(0)
         }
@@ -120,8 +135,6 @@ fun TelaMsg(navController: NavController,
                     navController = navController
                 )
 
-                val amigo = Dados.usuarios.find { it.id == idAmigo }
-
                 Text(
                     text = "${amigo?.nomeExibicao}",
                     color = Color.White,
@@ -144,11 +157,15 @@ fun TelaMsg(navController: NavController,
                 ),
                 contentPadding = PaddingValues(vertical = 12.dp)
             ) {
-                items(mensagensConversa.reversed()) { mensagemEnviada ->
+                items(mensagens.reversed()) { mensagemEnviada ->
                     Row(
                         modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.End
+                        horizontalArrangement = if (mensagemEnviada.remetenteId == idUsuario)
+                            Arrangement.End
+                        else
+                            Arrangement.Start
                     ) {
+
                         Surface(
                             color = Color.Transparent,
                             shape = RoundedCornerShape(12.dp),
