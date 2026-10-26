@@ -101,23 +101,23 @@ object Dados {
     )
 
     val pins = listOf(
-        Pin(1, "android.resource://com.example.myapplication/${R.drawable.outfit1}", 600, 468),
-        Pin(2, "android.resource://com.example.myapplication/${R.drawable.outfit2}", 700, 1080),
-        Pin(3, "android.resource://com.example.myapplication/${R.drawable.summer1}", 598, 280),
-        Pin(4, "android.resource://com.example.myapplication/${R.drawable.summer2}", 900, 560),
-        Pin(5, "android.resource://com.example.myapplication/${R.drawable.summer3}", 1080, 720),
-        Pin(6, "android.resource://com.example.myapplication/drawable/desenhos1", 800, 1000),
-        Pin(7, "android.resource://com.example.myapplication/drawable/desenhos2", 800, 1200),
-        Pin(8, "android.resource://com.example.myapplication/drawable/desenhos3", 800, 900),
-        Pin(9, "android.resource://com.example.myapplication/drawable/outfit1", 800, 1100),
-        Pin(10, "android.resource://com.example.myapplication/drawable/outfit2", 800, 1000),
-        Pin(11, "android.resource://com.example.myapplication/drawable/outfit3", 800, 1300),
-        Pin(12, "android.resource://com.example.myapplication/drawable/receitas1", 800, 800),
-        Pin(13, "android.resource://com.example.myapplication/drawable/receitas2", 800, 1000),
-        Pin(14, "android.resource://com.example.myapplication/drawable/receitas3", 800, 1100),
-        Pin(15, "android.resource://com.example.myapplication/drawable/summer1", 800, 1000),
-        Pin(16, "android.resource://com.example.myapplication/drawable/summer2", 800, 1200),
-        Pin(17, "android.resource://com.example.myapplication/drawable/summer3", 800, 950)
+        Pin(1, "titulo 1", "android.resource://com.example.myapplication/${R.drawable.outfit1}", 600, 468),
+        Pin(2, "titulo 2", "android.resource://com.example.myapplication/${R.drawable.outfit2}", 700, 1080),
+        Pin(3, "titulo 3", "android.resource://com.example.myapplication/${R.drawable.summer1}", 598, 280),
+        Pin(4, "titulo 4", "android.resource://com.example.myapplication/${R.drawable.summer2}", 900, 560),
+        Pin(5, "titulo 5", "android.resource://com.example.myapplication/${R.drawable.summer3}", 1080, 720),
+        Pin(6,  "titulo 6","android.resource://com.example.myapplication/drawable/desenhos1", 800, 1000),
+        Pin(7,  "titulo 7","android.resource://com.example.myapplication/drawable/desenhos2", 800, 1200),
+        Pin(8, "titulo 8", "android.resource://com.example.myapplication/drawable/desenhos3", 800, 900),
+        Pin(9, "titulo 9", "android.resource://com.example.myapplication/drawable/outfit1", 800, 1100),
+        Pin(10, "titulo 10", "android.resource://com.example.myapplication/drawable/outfit2", 800, 1000),
+        Pin(11, "titulo 11", "android.resource://com.example.myapplication/drawable/outfit3", 800, 1300),
+        Pin(12, "titulo 12", "android.resource://com.example.myapplication/drawable/receitas1", 800, 800),
+        Pin(13, "titulo 13", "android.resource://com.example.myapplication/drawable/receitas2", 800, 1000),
+        Pin(14, "titulo 14", "android.resource://com.example.myapplication/drawable/receitas3", 800, 1100),
+        Pin(15, "titulo 15", "android.resource://com.example.myapplication/drawable/summer1", 800, 1000),
+        Pin(16, "titulo 16", "android.resource://com.example.myapplication/drawable/summer2", 800, 1200),
+        Pin(17, "titulo 17", "android.resource://com.example.myapplication/drawable/summer3", 800, 950)
     )
 
 

@@ -3,6 +3,7 @@ package com.example.myapplication
 import androidx.room3.Dao
 import androidx.room3.Insert
 import androidx.room3.Query
+import androidx.room3.Update
 
 @Dao
 interface UsuarioDAO {
@@ -17,6 +18,15 @@ interface UsuarioDAO {
 
     @Query(" SELECT * FROM Usuario WHERE id > 0")
     suspend fun listarTodosUsuarios() : List<Usuario>
+
+    @Update
+    suspend fun atualizarUsuario(usuario: Usuario)
+
+    @Query("SELECT * FROM Usuario")
+    suspend fun buscarTodosUsuarios(): List<Usuario>
+
+    @Insert
+    suspend fun adicionarAmigo(usuarioAmigo: UsuarioAmigo)
 
     @Query("SELECT COUNT(*) FROM UsuarioAmigo WHERE usuarioId = :idUsuario")
     suspend fun contarAmigos(idUsuario: Int) : Int

@@ -51,15 +51,26 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.runtime.key
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavController
 import com.example.myapplication.data.Dados
 import com.example.myapplication.ui.theme.MyApplicationTheme
+import kotlinx.coroutines.coroutineScope
+import androidx.compose.runtime.rememberCoroutineScope
+import kotlinx.coroutines.launch
 
 @Composable
 fun TelaPesquisa(navController: NavController, idUsuario: Int = 0) {
+    val context = LocalContext.current
+
+    val db = remember { AppDatabase.getDatabase(context) }
+    val usuarioDAO = remember { db.usuarioDAO() }
+
+    val coroutineScope = rememberCoroutineScope()
 
     val usuario = Dados.usuarios.find{it.id == idUsuario}?: return;
 
+    //precisa arrumar os amigos ja adicionados
     Surface(
         modifier = Modifier.fillMaxSize(),
         color = Color(0xFF1e1e1e)
@@ -80,12 +91,20 @@ fun TelaPesquisa(navController: NavController, idUsuario: Int = 0) {
                 BarraPesquisa(
                     usuarios = Dados.usuarios,
                     usuarioLogado = usuario,
+//                    onAdicionarAmigo = { amigo ->
+//                        if (
+//                            amigo.id != usuario.id &&
+//                            amigo.id !in usuario.amigos
+//                        ) {
+//                            usuario.amigos.add(amigo.id)
+//                        }
+//                    },
                     onAdicionarAmigo = { amigo ->
-                        if (
-                            amigo.id != usuario.id &&
-                            amigo.id !in usuario.amigos
-                        ) {
-                            usuario.amigos.add(amigo.id)
+                        coroutineScope.launch {
+                            if (amigo.id != usuario.id) {
+                                val relacao = UsuarioAmigo(usuarioId = usuario.id, amigoId = amigo.id)
+                                usuarioDAO.adicionarAmigo(relacao)
+                            }
                         }
                     },
                     navController = navController
@@ -221,6 +240,7 @@ fun BarraPesquisa(
 @Composable
 fun Usuarios(usuario: Usuario,
              usuarioLogado: Usuario,
+             amigosIds: List<Int> = emptyList(),
              imagem: Int? = null,
              onAdicionarAmigo: (Usuario) -> Unit) {
     Row(
@@ -231,8 +251,12 @@ fun Usuarios(usuario: Usuario,
         horizontalArrangement = Arrangement.SpaceBetween
     )
     {
-        var adicionado by remember(usuario.id) {
-            mutableStateOf(usuario.id in usuarioLogado.amigos)
+//        var adicionado by remember(usuario.id) {
+//            mutableStateOf(usuario.id in usuarioLogado.amigos)
+//        }
+
+        var adicionado by remember {
+            mutableStateOf(usuario.id in amigosIds)
         }
 
         Row(
@@ -270,10 +294,14 @@ fun Usuarios(usuario: Usuario,
                 texto = "Adicionar",
                 adicionado = adicionado,
                 onClick = {
-                    if (
-                        usuario.id != usuarioLogado.id &&
-                        usuario.id !in usuarioLogado.amigos
-                    ) {
+//                    if (
+//                        usuario.id != usuarioLogado.id &&
+//                        usuario.id !in usuarioLogado.amigos
+//                    ) {
+//                        onAdicionarAmigo(usuario)
+//                        adicionado = true
+//                    }
+                    if (usuario.id != usuarioLogado.id) {
                         onAdicionarAmigo(usuario)
                         adicionado = true
                     }

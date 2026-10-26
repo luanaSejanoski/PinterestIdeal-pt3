@@ -47,6 +47,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalTextStyle
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavController
@@ -54,6 +55,7 @@ import coil.compose.rememberAsyncImagePainter
 
 
 import com.example.myapplication.data.Dados
+import kotlinx.coroutines.launch
 import kotlin.math.sin
 
 
@@ -138,26 +140,46 @@ fun CampoEditar(nomeCampo: String,
     )
 }
 
-fun salvarAlteracoes(
-    usuario: Usuario, nomeExibicao: String,
-    nomeUsuario: String, biografia: String,
-    email: String, fotoPerfil: Uri?
+//fun salvarAlteracoes(
+//    usuario: Usuario, nomeExibicao: String,
+//    nomeUsuario: String, biografia: String,
+//    email: String, fotoPerfil: Uri?
+//){
+//    val usuarioAtualizado = usuario.copy(
+//        nomeExibicao = nomeExibicao,
+//        nomeUsuario = nomeUsuario,
+//        biografia = biografia,
+//        email = email,
+//        foto = fotoPerfil
+//    )
+//
+//    val indice = Dados.usuarios.indexOfFirst {
+//        it.id == usuario.id
+//    }
+//
+//    if(indice != -1){
+//        Dados.usuarios[indice] = usuarioAtualizado
+//    }
+//}
+
+suspend fun salvarAlteracoes(
+    usuarioDAO: UsuarioDAO,
+    usuario: Usuario,
+    nomeExibicao: String,
+    nomeUsuario: String,
+    biografia: String,
+    email: String,
+    fotoPerfil: Uri?
 ){
     val usuarioAtualizado = usuario.copy(
         nomeExibicao = nomeExibicao,
         nomeUsuario = nomeUsuario,
         biografia = biografia,
         email = email,
-        foto = fotoPerfil
+        foto = fotoPerfil.toString()
     )
 
-    val indice = Dados.usuarios.indexOfFirst {
-        it.id == usuario.id
-    }
-
-    if(indice != -1){
-        Dados.usuarios[indice] = usuarioAtualizado
-    }
+    usuarioDAO.atualizarUsuario(usuarioAtualizado)
 }
 
 @Composable
@@ -185,6 +207,11 @@ fun geraBotao(x: Float, texto: String, habilitado: Boolean,
 @Composable
 fun TelaEditarPerfil(navController: NavController, idUsuario: Int = 0) {
 
+    val context = LocalContext.current
+    val db = remember { AppDatabase.getDatabase(context) }
+    val usuarioDAO = remember { db.usuarioDAO() }
+    val coroutineScope = rememberCoroutineScope()
+
     val usuario = Dados.usuarios.find { it.id == idUsuario }?: return
 
 
@@ -192,6 +219,7 @@ fun TelaEditarPerfil(navController: NavController, idUsuario: Int = 0) {
     var nomeUsuario by remember { mutableStateOf(usuario.nomeUsuario) }
     var biografia by remember { mutableStateOf(usuario.biografia) }
     var email by remember { mutableStateOf(usuario.email) }
+//    var fotoPerfil by remember { mutableStateOf(usuario.foto) }
     var fotoPerfil by remember { mutableStateOf(usuario.foto) }
 
 
@@ -200,7 +228,8 @@ fun TelaEditarPerfil(navController: NavController, idUsuario: Int = 0) {
         contract = ActivityResultContracts.GetContent()
     ) { uri ->
         if(uri != null){
-            fotoPerfil = uri
+//            fotoPerfil = uri
+            fotoPerfil = uri.toString()
         }
     }
 
@@ -234,12 +263,25 @@ fun TelaEditarPerfil(navController: NavController, idUsuario: Int = 0) {
                         habilitado,
                         corHabilitado = Color.Red,
                         onclick = {
-                            salvarAlteracoes(
-                                usuario, nomeExibicao, nomeUsuario,
-                                biografia, email, fotoPerfil
-                            )
+//                            salvarAlteracoes(
+//                                usuario, nomeExibicao, nomeUsuario,
+//                                biografia, email, fotoPerfil
+//                            )
+//
+//                            navController.navigate(Rotas.HOME)
+                            coroutineScope.launch {
+                                salvarAlteracoes(
+                                    usuarioDAO = usuarioDAO,
+                                    usuario = usuario,
+                                    nomeExibicao = nomeExibicao,
+                                    nomeUsuario = nomeUsuario,
+                                    biografia = biografia,
+                                    email = email,
+                                    fotoPerfil = fotoPerfil?.let { Uri.parse(it) }
+                                )
 
-                            navController.navigate(Rotas.HOME)
+                                navController.navigate(Rotas.HOME)
+                            }
                         }
                     )
                 }
