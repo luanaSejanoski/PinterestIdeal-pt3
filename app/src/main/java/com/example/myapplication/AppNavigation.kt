@@ -91,7 +91,7 @@ fun AppNavigation(navController: NavHostController) {
                }
                composable(Rotas.VER_PASTA_USUARIO){  entrada ->
                     val idPasta = entrada.arguments?.getString("idPasta")?.toIntOrNull()
-                    TelaVerPastaUsuario(navController, idPasta = idPasta)
+                    TelaVerPastaUsuario(navController, idPasta = idPasta!!)
                }
 
           }

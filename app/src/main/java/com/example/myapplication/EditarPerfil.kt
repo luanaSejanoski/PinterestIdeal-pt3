@@ -227,6 +227,7 @@ fun TelaEditarPerfil(navController: NavController, idUsuario: Int = 0) {
     val selecionarImagem = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
     ) { uri ->
+
         if(uri != null){
 //            fotoPerfil = uri
             fotoPerfil = uri.toString()

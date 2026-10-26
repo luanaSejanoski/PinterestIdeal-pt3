@@ -2,6 +2,7 @@ package com.example.myapplication
 
 import android.net.Uri
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -9,8 +10,10 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
@@ -26,9 +29,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
@@ -36,6 +41,7 @@ import androidx.core.net.toUri
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import com.example.myapplication.data.Dados
+import com.example.myapplication.data.Pasta
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -44,22 +50,35 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class)
 
 @Composable
-fun TelaVerPastaUsuario(navController: NavController, idPasta: Int?) {
-    val pasta = Dados.pastas.find{it.id == idPasta}?: return
+fun TelaVerPastaUsuario(navController: NavController, idPasta: Int) {
 
     val context = LocalContext.current
     val db = AppDatabase.getDatabase(context)
     val pastaDAO = db.pastaDAO()
     val pinDAO = db.pinDAO()
+    var pasta by remember {mutableStateOf<Pasta?>(null)}
 
     var totalPinsPasta by remember { mutableStateOf(0) }
     var pins by remember { mutableStateOf<List<Pin>>(emptyList()) }
 
-    LaunchedEffect(pasta.id) {
+
+
+    LaunchedEffect(idPasta) {
         CoroutineScope(Dispatchers.IO).launch {
-            totalPinsPasta = contarPinsPasta(pastaDAO,pasta.id)
-            pins = buscarPinsPasta(pastaDAO, pasta.id)
+            val pastaEncontrada = buscarPastaId(pastaDAO, idPasta)
+            val total = contarPinsPasta(pastaDAO, idPasta)
+            val lista = buscarPinsPasta(pastaDAO, idPasta)
+
+            pasta = pastaEncontrada
+            totalPinsPasta = total
+            pins = lista
         }
+    }
+
+    val pastaAtual = pasta
+    if (pastaAtual == null) {
+        Surface(modifier = Modifier.fillMaxSize(), color = Color.Transparent) {}
+        return
     }
 
     Scaffold(
@@ -78,8 +97,8 @@ fun TelaVerPastaUsuario(navController: NavController, idPasta: Int?) {
         }
     ) { paddingValues ->
 
-        var nomePasta by remember { mutableStateOf(pasta.nome) }
-        var imagemAmpliada by remember {mutableStateOf<Uri?>(null)}
+        var nomePasta by remember { mutableStateOf(pastaAtual.nome) }
+        var imagemAmpliada by remember {mutableStateOf<Pin?>(null)}
 
 
         Surface(
@@ -150,7 +169,7 @@ fun TelaVerPastaUsuario(navController: NavController, idPasta: Int?) {
                                 val proporcao = item.largura.toFloat() / item.altura.toFloat()
 
                                 gerarBlocoImagem(item, proporcao,
-                                    onClick = {imagemAmpliada = item.imagem.toUri()},
+                                    onClick = {imagemAmpliada = item},
                                     )
                             }
                         }
@@ -162,7 +181,7 @@ fun TelaVerPastaUsuario(navController: NavController, idPasta: Int?) {
                                 val proporcao =
                                     item.largura.toFloat() / item.altura.toFloat()
                                 gerarBlocoImagem(item, proporcao,
-                                    onClick = {imagemAmpliada = item.imagem.toUri()},
+                                    onClick = {imagemAmpliada = item},
                                 )
                             }
                         }
@@ -172,19 +191,44 @@ fun TelaVerPastaUsuario(navController: NavController, idPasta: Int?) {
         }
 
         //amplia a imagem quando clicada
-        imagemAmpliada?.let{imagem ->
+        imagemAmpliada?.let{pin ->
             Dialog(
-                onDismissRequest = {imagemAmpliada = null}
-            ){
-                Image(
-                    painter = rememberAsyncImagePainter(imagem),
-                    contentDescription = null,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable { imagemAmpliada = null },
-                    contentScale = ContentScale.Fit
-                )
+                onDismissRequest = { imagemAmpliada = null}
 
+            ) {
+                Column(
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(12.dp))
+                        .background(Color(0x74525252))
+                        .padding(12.dp)
+                ) {
+                    Image(
+                        painter = rememberAsyncImagePainter(pin.imagem.toUri()),
+                        contentDescription = null,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .heightIn(max = 450.dp)
+                            .clickable {
+                                imagemAmpliada = null
+                            },
+                        contentScale = ContentScale.Fit
+                    )
+
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 8.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text(
+                            text = if (pin.titulo.isNotBlank()) pin.titulo else "Sem título",
+                            color = if (pin.titulo.isNotBlank()) Color.White else Color.Gray,
+                            modifier = Modifier.weight(1f)
+                        )
+
+                    }
+                }
             }
         }
     }

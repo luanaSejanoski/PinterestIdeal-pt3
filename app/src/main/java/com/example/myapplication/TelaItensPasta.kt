@@ -213,16 +213,20 @@ fun TelaItensPasta(navController: NavController,idPasta: Int = 0) {
     LaunchedEffect(idPasta) {
         CoroutineScope(Dispatchers.IO).launch {
             val pastaEncontrada = buscarPastaId(pastaDAO, idPasta)
+            val total = contarPinsPasta(pastaDAO, idPasta)
+            val lista = buscarPinsPasta(pastaDAO, idPasta)
 
-            withContext(Dispatchers.Main) {
-                pasta = pastaEncontrada
-            }
-
-            atualizarPins(idPasta)
+            pasta = pastaEncontrada
+            totalPinsPasta = total
+            pins = lista
         }
     }
 
-    val pastaAtual = pasta ?: return
+    val pastaAtual = pasta
+    if (pastaAtual == null) {
+        Surface(modifier = Modifier.fillMaxSize(), color = Color.Transparent) {}
+        return
+    }
 
 
     Scaffold(
@@ -577,7 +581,7 @@ fun TelaItensPasta(navController: NavController,idPasta: Int = 0) {
                             modifier = Modifier.weight(1f)
                         )
                         gerarBlocoIcone(
-                            Color(0xFF1E1E1E), 30, 5,
+                            Color.Transparent, 30, 5,
                             icon = painterResource(R.drawable.editar),
                             onClick = {
                                 novoTitulo = pin.titulo
