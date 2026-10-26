@@ -79,7 +79,7 @@ fun AppNavigation(navController: NavHostController) {
 
                composable(Rotas.CHAT) { entrada ->
                     val idAmigo = entrada.arguments?.getString("idAmigo")?.toIntOrNull() ?: 0
-                    TelaMsg(navController, idAmigo = idAmigo)
+                    TelaMsg(navController, idAmigo = idAmigo, idUsuario = 0)
 
                }
 
