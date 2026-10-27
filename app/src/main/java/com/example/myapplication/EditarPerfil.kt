@@ -47,6 +47,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalTextStyle
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.LocalContext
@@ -170,13 +171,13 @@ suspend fun salvarAlteracoes(
     biografia: String,
     email: String,
     fotoPerfil: Uri?
-){
+) {
     val usuarioAtualizado = usuario.copy(
         nomeExibicao = nomeExibicao,
         nomeUsuario = nomeUsuario,
         biografia = biografia,
         email = email,
-        foto = fotoPerfil.toString()
+        foto = fotoPerfil?.toString() ?: usuario.foto
     )
 
     usuarioDAO.atualizarUsuario(usuarioAtualizado)
@@ -212,16 +213,36 @@ fun TelaEditarPerfil(navController: NavController, idUsuario: Int = 0) {
     val usuarioDAO = remember { db.usuarioDAO() }
     val coroutineScope = rememberCoroutineScope()
 
-    val usuario = Dados.usuarios.find { it.id == idUsuario }?: return
+//    val usuario = Dados.usuarios.find { it.id == idUsuario }?: return
+    var usuario by remember { mutableStateOf<Usuario?>(null) }
 
 
-    var nomeExibicao by remember { mutableStateOf(usuario.nomeExibicao) }
-    var nomeUsuario by remember { mutableStateOf(usuario.nomeUsuario) }
-    var biografia by remember { mutableStateOf(usuario.biografia) }
-    var email by remember { mutableStateOf(usuario.email) }
+//    var nomeExibicao by remember { mutableStateOf(usuario.nomeExibicao) }
+//    var nomeUsuario by remember { mutableStateOf(usuario.nomeUsuario) }
+//    var biografia by remember { mutableStateOf(usuario.biografia) }
+//    var email by remember { mutableStateOf(usuario.email) }
+////    var fotoPerfil by remember { mutableStateOf(usuario.foto) }
 //    var fotoPerfil by remember { mutableStateOf(usuario.foto) }
-    var fotoPerfil by remember { mutableStateOf(usuario.foto) }
 
+    var nomeExibicao by remember { mutableStateOf("") }
+    var nomeUsuario by remember { mutableStateOf("") }
+    var biografia by remember { mutableStateOf("") }
+    var email by remember { mutableStateOf("") }
+    var fotoPerfil by remember { mutableStateOf<String?>(null) }
+
+    LaunchedEffect(idUsuario) {
+        val usuarioBanco = usuarioDAO.buscarUsuarioId(idUsuario)
+        if (usuarioBanco != null) {
+            usuario = usuarioBanco
+            nomeExibicao = usuarioBanco.nomeExibicao
+            nomeUsuario = usuarioBanco.nomeUsuario
+            biografia = usuarioBanco.biografia ?: ""
+            email = usuarioBanco.email ?: ""
+            fotoPerfil = usuarioBanco.foto
+        }
+    }
+
+    val usuarioAtual = usuario ?: return
 
     //seleciona foto da galeria
     val selecionarImagem = rememberLauncherForActivityResult(
@@ -253,12 +274,18 @@ fun TelaEditarPerfil(navController: NavController, idUsuario: Int = 0) {
                     BotaoVoltar(navController=navController)
                     Text(text = "Editar perfil", color = Color.White, textAlign = TextAlign.Center)
 
+//                    val habilitado =
+//                        nomeExibicao != usuario.nomeExibicao ||
+//                                nomeUsuario != usuario.nomeUsuario ||
+//                                biografia != usuario.biografia ||
+//                                email != usuario.email ||
+//                                fotoPerfil != usuario.foto
                     val habilitado =
-                        nomeExibicao != usuario.nomeExibicao ||
-                                nomeUsuario != usuario.nomeUsuario ||
-                                biografia != usuario.biografia ||
-                                email != usuario.email ||
-                                fotoPerfil != usuario.foto
+                        nomeExibicao != usuarioAtual.nomeExibicao ||
+                                nomeUsuario != usuarioAtual.nomeUsuario ||
+                                biografia != (usuarioAtual.biografia ?: "") ||
+                                email != (usuarioAtual.email ?: "") ||
+                                fotoPerfil != usuarioAtual.foto
 
                     geraBotao(0.25f, "Feito",
                         habilitado,
@@ -271,14 +298,14 @@ fun TelaEditarPerfil(navController: NavController, idUsuario: Int = 0) {
 //
 //                            navController.navigate(Rotas.HOME)
                             coroutineScope.launch {
-                                salvarAlteracoes(
+                                atualizarDadosUsuario(
                                     usuarioDAO = usuarioDAO,
-                                    usuario = usuario,
+                                    usuario = usuarioAtual,
                                     nomeExibicao = nomeExibicao,
                                     nomeUsuario = nomeUsuario,
                                     biografia = biografia,
                                     email = email,
-                                    fotoPerfil = fotoPerfil?.let { Uri.parse(it) }
+                                    fotoPerfil = fotoPerfil
                                 )
 
                                 navController.navigate(Rotas.HOME)
@@ -301,7 +328,8 @@ fun TelaEditarPerfil(navController: NavController, idUsuario: Int = 0) {
                             y = 5,
                             cor = Color.Red,
                             raio = 75,
-                            imagem = fotoPerfil?: R.drawable.foto_perfil_editar
+                            imagem = if (!fotoPerfil.isNullOrEmpty()) fotoPerfil else R.drawable.foto_perfil_editar
+
                         )
                         geraBotao(0.2f, "Editar", habilitado = true,
                             onclick = {selecionarImagem.launch("image/*")}

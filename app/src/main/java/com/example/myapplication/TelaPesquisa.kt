@@ -38,6 +38,7 @@ import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldColors
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -70,7 +71,16 @@ fun TelaPesquisa(navController: NavController, idUsuario: Int = 0) {
 
     val usuario = Dados.usuarios.find{it.id == idUsuario}?: return;
 
-    //precisa arrumar os amigos ja adicionados
+    var idsAmigos by remember { mutableStateOf<List<Int>>(emptyList()) }
+    var listaUsuarios by remember { mutableStateOf<List<Usuario>>(emptyList()) }
+
+    LaunchedEffect(Unit) {
+        val listaAmigosBanco = buscarAmigosDoUsuario(usuarioDAO, usuario.id)
+        idsAmigos = listaAmigosBanco.map { amigo -> amigo.id }
+
+        listaUsuarios = listarUsuarios(usuarioDAO)
+    }
+
     Surface(
         modifier = Modifier.fillMaxSize(),
         color = Color(0xFF1e1e1e)
@@ -91,6 +101,7 @@ fun TelaPesquisa(navController: NavController, idUsuario: Int = 0) {
                 BarraPesquisa(
                     usuarios = Dados.usuarios,
                     usuarioLogado = usuario,
+                    idsAmigos = idsAmigos,
 //                    onAdicionarAmigo = { amigo ->
 //                        if (
 //                            amigo.id != usuario.id &&
@@ -99,11 +110,19 @@ fun TelaPesquisa(navController: NavController, idUsuario: Int = 0) {
 //                            usuario.amigos.add(amigo.id)
 //                        }
 //                    },
+//                    onAdicionarAmigo = { amigo ->
+//                        coroutineScope.launch {
+//                            if (amigo.id != usuario.id) {
+//                                val relacao = UsuarioAmigo(usuarioId = usuario.id, amigoId = amigo.id)
+//                                usuarioDAO.adicionarAmigo(relacao)
+//                            }
+//                        }
+//                    },
                     onAdicionarAmigo = { amigo ->
                         coroutineScope.launch {
-                            if (amigo.id != usuario.id) {
-                                val relacao = UsuarioAmigo(usuarioId = usuario.id, amigoId = amigo.id)
-                                usuarioDAO.adicionarAmigo(relacao)
+                            if (amigo.id != usuario.id && amigo.id !in idsAmigos) {
+                                adicionarAmigoBanco(usuarioDAO, usuario.id, amigo.id)
+                                idsAmigos = idsAmigos + amigo.id
                             }
                         }
                     },
@@ -142,6 +161,7 @@ fun criaBotao(x: Float,
 @Composable
 fun BarraPesquisa(
     usuarios: List<Usuario>,
+    idsAmigos: List<Int>,
     onAdicionarAmigo: (Usuario) -> Unit,
     usuarioLogado: Usuario,
     navController: NavController
@@ -229,6 +249,7 @@ fun BarraPesquisa(
                     Usuarios(
                         usuario = usuario,
                         usuarioLogado = usuarioLogado,
+                        isAmigo = usuario.id in idsAmigos,
                         imagem = R.drawable.user,
                         onAdicionarAmigo = onAdicionarAmigo
                     )
@@ -240,6 +261,7 @@ fun BarraPesquisa(
 @Composable
 fun Usuarios(usuario: Usuario,
              usuarioLogado: Usuario,
+             isAmigo: Boolean,
              amigosIds: List<Int> = emptyList(),
              imagem: Int? = null,
              onAdicionarAmigo: (Usuario) -> Unit) {
@@ -255,8 +277,13 @@ fun Usuarios(usuario: Usuario,
 //            mutableStateOf(usuario.id in usuarioLogado.amigos)
 //        }
 
-        var adicionado by remember {
-            mutableStateOf(usuario.id in amigosIds)
+
+//        var adicionado by remember {
+//            mutableStateOf(usuario.id in amigosIds)
+//        }
+
+        var adicionado by remember(isAmigo) {
+            mutableStateOf(isAmigo)
         }
 
         Row(

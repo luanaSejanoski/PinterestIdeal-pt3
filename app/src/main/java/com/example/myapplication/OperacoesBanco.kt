@@ -2,6 +2,7 @@ package com.example.myapplication
 
 import android.R
 import android.util.Log
+import androidx.room3.Query
 import com.example.myapplication.data.Pasta
 
 suspend fun buscarPastas(pastaDAO: PastaDAO, usuarioId: Int): List<Pasta> {
@@ -113,6 +114,56 @@ suspend fun alterarTituloPin(novoTitulo: String, pin:Pin, pinDAO: PinDAO){
     }catch (e: Exception){
         Log.e("Erro ao mudar o título do pin...", "Msg ${e.message}")
 
+    }
+}
+
+//operacoes usuarios
+suspend fun atualizarDadosUsuario(
+    usuarioDAO: UsuarioDAO,
+    usuario: Usuario,
+    nomeExibicao: String,
+    nomeUsuario: String,
+    biografia: String,
+    email: String,
+    fotoPerfil: String?
+) {
+    try {
+        val usuarioAtualizado = usuario.copy(
+            nomeExibicao = nomeExibicao,
+            nomeUsuario = nomeUsuario,
+            biografia = biografia,
+            email = email,
+            foto = fotoPerfil
+        )
+        usuarioDAO.atualizarUsuario(usuarioAtualizado)
+    } catch (e: Exception) {
+        Log.e("Erro ao atualizar usuário...", "Msg ${e.message}")
+    }
+}
+
+suspend fun listarUsuarios(usuarioDAO: UsuarioDAO): List<Usuario> {
+    return try {
+        usuarioDAO.listarTodosUsuarios()
+    } catch (e: Exception) {
+        Log.e("Erro ao listar usuários...", "Msg ${e.message}")
+        emptyList()
+    }
+}
+
+suspend fun buscarAmigosDoUsuario(usuarioDAO: UsuarioDAO, idUsuario: Int): List<Usuario> {
+    return try {
+        usuarioDAO.buscarAmigos(idUsuario)
+    } catch (e: Exception) {
+        Log.e("Erro ao buscar amigos...", "Msg ${e.message}")
+        emptyList()
+    }
+}
+suspend fun adicionarAmigoBanco(usuarioDAO: UsuarioDAO, usuarioId: Int, amigoId: Int) {
+    try {
+        val relacao = UsuarioAmigo(usuarioId = usuarioId, amigoId = amigoId)
+        usuarioDAO.adicionarAmigo(relacao)
+    } catch (e: Exception) {
+        Log.e("Erro ao adicionar amigo...", "Msg ${e.message}")
     }
 }
 
