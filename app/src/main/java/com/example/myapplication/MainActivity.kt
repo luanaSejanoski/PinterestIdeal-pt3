@@ -21,7 +21,9 @@ class MainActivity : ComponentActivity() {
             val context = LocalContext.current
 
             LaunchedEffect(Unit) {
-                carregarDadosBanco(AppDatabase.getDatabase(context))
+                withContext(Dispatchers.IO) {
+                    carregarDadosBanco(AppDatabase.getDatabase(context))
+                }
             }
 
             MyApplicationTheme {

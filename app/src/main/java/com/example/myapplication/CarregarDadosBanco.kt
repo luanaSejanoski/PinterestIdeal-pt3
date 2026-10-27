@@ -35,9 +35,4 @@ suspend fun carregarDadosBanco(db: AppDatabase) {
         Dados.pastaPins.forEach {pastaDAO.vincular(it)
         }}
 
-    android.util.Log.d(
-        "BANCO_TESTE",
-        "Total de relacionamentos: ${pastaDAO.contarRelacaoPastaPin()}"
-    )
-
 }
