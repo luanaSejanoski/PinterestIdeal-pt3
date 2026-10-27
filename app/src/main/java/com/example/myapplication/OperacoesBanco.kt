@@ -167,7 +167,7 @@ suspend fun adicionarAmigoBanco(usuarioDAO: UsuarioDAO, usuarioId: Int, amigoId:
     }
 }
 
-suspend fun buscarUsuarioPorId(usuarioDAO: UsuarioDAO, idUsuario: Int):Usuario {
+suspend fun buscarUsuarioPorId(usuarioDAO: UsuarioDAO, idUsuario: Int):Usuario? {
    return try {
         usuarioDAO.buscarUsuarioId(idUsuario)
     } catch (e: Exception) {
