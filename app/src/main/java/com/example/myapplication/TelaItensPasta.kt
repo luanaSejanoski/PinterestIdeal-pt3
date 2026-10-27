@@ -530,6 +530,7 @@ fun TelaItensPasta(navController: NavController,idPasta: Int = 0) {
                                             onLongClick = {
                                                 CoroutineScope(Dispatchers.IO).launch {
                                                     excluirPinDaPasta(item.id, idPasta, pastaDAO, pinDAO)
+                                                    atualizarPins(idPasta)
                                                 }
                                                 Toast.makeText(
                                                     context,

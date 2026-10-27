@@ -45,6 +45,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.core.net.toUri
 import coil.compose.rememberAsyncImagePainter
 import com.example.myapplication.data.Dados
 import androidx.navigation.NavHostController
@@ -53,6 +54,7 @@ import com.example.myapplication.data.Pasta
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 @Composable
 fun gerarBotao(x: Float,
@@ -87,7 +89,7 @@ fun PreviewTelaPerfil() {
 
 @SuppressLint("CoroutineCreationDuringComposition")
 @Composable
-fun gararPasta(pasta: Pasta, pastaDAO: PastaDAO, onclick: () -> Unit){
+fun gerarPasta(pasta: Pasta, pastaDAO: PastaDAO, onclick: () -> Unit){
 
     var totalPinsPasta by remember { mutableStateOf(0) }
     var pins by remember { mutableStateOf<List<Pin>>(emptyList()) }
@@ -170,23 +172,27 @@ fun gararPasta(pasta: Pasta, pastaDAO: PastaDAO, onclick: () -> Unit){
 @Composable
 fun TelaPerfil(navController: NavHostController, idUsuario: Int = 0) {
 
-    val usuario = Dados.usuarios.find { it.id == idUsuario }?: return
+
     val context = LocalContext.current
     val db = AppDatabase.getDatabase(context)
     val pastaDAO = db.pastaDAO()
     val usuarioDAO = db.usuarioDAO()
+    var usuario by remember { mutableStateOf<Usuario?>(null) }
 
     var pastasDoUsuario by remember { mutableStateOf<List<Pasta>>(emptyList()) }
     var totalAmigos by remember{mutableStateOf(0)}
 
-    LaunchedEffect(Unit) {
+    LaunchedEffect(idUsuario) {
         CoroutineScope(Dispatchers.IO).launch {
+            usuario = buscarUsuarioPorId(usuarioDAO,idUsuario)
             pastasDoUsuario = buscarPastas(pastaDAO, idUsuario)
-            totalAmigos = usuarioDAO.contarAmigos(idUsuario)
+            totalAmigos = contarAmigosUsuario(usuarioDAO,idUsuario)
         }
     }
 
-    Surface(
+        val usuarioAtual = usuario ?: return
+
+        Surface(
         modifier = Modifier.fillMaxSize(),
         color = Color(0xFF1e1e1e)
     ) {
@@ -202,8 +208,9 @@ fun TelaPerfil(navController: NavHostController, idUsuario: Int = 0) {
                         .height(60.dp)
                 ) {
                     Column {
+                            val fotoPerfil = usuarioAtual.foto?.toUri()
                         Image(
-                            painter = rememberAsyncImagePainter(usuario.foto?: R.drawable.foto_perfil_editar),
+                            painter = rememberAsyncImagePainter(fotoPerfil?: R.drawable.foto_perfil_editar),
                             contentDescription = "Foto de perfil",
                             contentScale = ContentScale.Crop,
                             modifier = Modifier
@@ -215,8 +222,8 @@ fun TelaPerfil(navController: NavHostController, idUsuario: Int = 0) {
                         modifier = Modifier.padding(start = 10.dp),
                         verticalArrangement = Arrangement.spacedBy(5.dp)
                     ) {
-                        Text(text = "${usuario.nomeExibicao}", color = Color.White, fontSize = 20.sp)
-                        Text(text = "${usuario.nomeUsuario}", color = Color.White, fontSize = 15.sp)
+                        Text(text = "${usuarioAtual.nomeExibicao}", color = Color.White, fontSize = 20.sp)
+                        Text(text = "${usuarioAtual.nomeUsuario}", color = Color.White, fontSize = 15.sp)
                     }
                 }
             }
@@ -239,12 +246,12 @@ fun TelaPerfil(navController: NavHostController, idUsuario: Int = 0) {
                             fontWeight = FontWeight.Bold,
                             modifier = Modifier.clickable{
                                 navController.navigate(
-                                    Rotas.VER_AMIGOS.replace("{idUsuario}", usuario.id.toString())
+                                    Rotas.VER_AMIGOS.replace("{idUsuario}", usuarioAtual.id.toString())
                                 )
                             }
                         )
                         Text(
-                            text = "${usuario.biografia}".take(50),
+                            text = "${usuarioAtual.biografia}".take(50),
                             color = Color.White,
                             fontSize = 15.sp,
                             overflow = TextOverflow.Ellipsis
@@ -320,7 +327,7 @@ fun TelaPerfil(navController: NavHostController, idUsuario: Int = 0) {
                                         modifier = Modifier.fillMaxWidth(),
                                         contentAlignment = Alignment.CenterStart
                                     ) {
-                                        gararPasta(
+                                        gerarPasta(
                                             pasta,
                                             pastaDAO,
                                             onclick = {

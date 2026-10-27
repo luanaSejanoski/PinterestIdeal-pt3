@@ -167,3 +167,21 @@ suspend fun adicionarAmigoBanco(usuarioDAO: UsuarioDAO, usuarioId: Int, amigoId:
     }
 }
 
+suspend fun buscarUsuarioPorId(usuarioDAO: UsuarioDAO, idUsuario: Int):Usuario {
+   return try {
+        usuarioDAO.buscarUsuarioId(idUsuario)
+    } catch (e: Exception) {
+        Log.e("Erro ao adicionar amigo...", "Msg ${e.message}")
+        throw e
+    }
+}
+
+suspend fun contarAmigosUsuario(usuarioDAO: UsuarioDAO, usuarioId: Int): Int{
+    return try{
+        usuarioDAO.contarAmigos(usuarioId)
+    }catch (e: Exception){
+        Log.e("Erro ao adicionar amigo...", "Msg ${e.message}")
+        0
+    }
+}
+

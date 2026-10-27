@@ -11,7 +11,7 @@ interface UsuarioDAO {
     @Insert suspend fun vincular(ligacao: UsuarioAmigo)
 
     @Query("SELECT * FROM Usuario WHERE id = :id")
-    suspend fun buscarUsuarioId(id: Int): Usuario?
+    suspend fun buscarUsuarioId(id: Int): Usuario
 
     @Query("SELECT COUNT(*) FROM Usuario")
     suspend fun contarUsuarios(): Int
@@ -31,7 +31,7 @@ interface UsuarioDAO {
     @Insert
     suspend fun adicionarAmigo(usuarioAmigo: UsuarioAmigo)
 
-    @Query("SELECT COUNT(*) FROM UsuarioAmigo WHERE usuarioId = :idUsuario")
+    @Query("SELECT  COUNT(DISTINCT amigoId) FROM UsuarioAmigo WHERE usuarioId = :idUsuario")
     suspend fun contarAmigos(idUsuario: Int) : Int
 
     @Query("""

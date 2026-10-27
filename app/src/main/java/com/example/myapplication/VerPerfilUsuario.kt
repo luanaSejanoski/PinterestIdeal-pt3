@@ -205,7 +205,7 @@ fun TelaVerPerfilUsuario(navController: NavHostController, idUsuario: Int = 1){
                                         modifier = Modifier.fillMaxWidth(),
                                         contentAlignment = Alignment.CenterStart
                                     ) {
-                                        gararPasta(
+                                        gerarPasta(
                                             pasta,
                                             pastaDAO,
                                             onclick = {

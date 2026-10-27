@@ -51,6 +51,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.LocalContext
+import androidx.core.net.toUri
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 
@@ -246,14 +247,20 @@ fun TelaEditarPerfil(navController: NavController, idUsuario: Int = 0) {
 
     //seleciona foto da galeria
     val selecionarImagem = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.GetContent()
+        contract = ActivityResultContracts.OpenDocument()
     ) { uri ->
+        if(uri != null) {
+            context.contentResolver.takePersistableUriPermission(
+                uri,
+                Intent.FLAG_GRANT_READ_URI_PERMISSION
+            )
 
-        if(uri != null){
-//            fotoPerfil = uri
             fotoPerfil = uri.toString()
         }
-    }
+//            fotoPerfil = uri
+
+        }
+
 
     Surface(modifier = Modifier
         .fillMaxSize()
@@ -328,11 +335,11 @@ fun TelaEditarPerfil(navController: NavController, idUsuario: Int = 0) {
                             y = 5,
                             cor = Color.Red,
                             raio = 75,
-                            imagem = if (!fotoPerfil.isNullOrEmpty()) fotoPerfil else R.drawable.foto_perfil_editar
+                            imagem = if (!fotoPerfil.isNullOrEmpty()) (fotoPerfil as String).toUri() else R.drawable.foto_perfil_editar
 
                         )
                         geraBotao(0.2f, "Editar", habilitado = true,
-                            onclick = {selecionarImagem.launch("image/*")}
+                            onclick = {selecionarImagem.launch(arrayOf("image/*"))}
                         )
                     }
                 }
