@@ -195,7 +195,11 @@ fun TelaPerfil(navController: NavHostController, idUsuario: Int = 0) {
         }
     }
 
-        val usuarioAtual = usuario ?: return
+        val usuarioAtual = usuario
+    if (usuarioAtual == null) {
+        Surface(modifier = Modifier.fillMaxSize(), color = Color(0xFF1e1e1e)) {}
+        return
+    }
 
         Surface(
         modifier = Modifier.fillMaxSize(),
