@@ -69,8 +69,9 @@ fun TelaPesquisa(navController: NavController, idUsuario: Int = 0) {
 
     val coroutineScope = rememberCoroutineScope()
 
-    val usuario = Dados.usuarios.find{it.id == idUsuario}?: return;
+//    val usuario = Dados.usuarios.find{it.id == idUsuario}?: return;
 
+    var usuario by remember { mutableStateOf<Usuario?>(null) }
     var idsAmigos by remember { mutableStateOf<List<Int>>(emptyList()) }
     var listaUsuarios by remember { mutableStateOf<List<Usuario>>(emptyList()) }
 
@@ -79,7 +80,11 @@ fun TelaPesquisa(navController: NavController, idUsuario: Int = 0) {
         idsAmigos = listaAmigosBanco.map { amigo -> amigo.id }
 
         listaUsuarios = listarUsuarios(usuarioDAO)
+        usuario = buscarUsuarioPorId(usuarioDAO, idUsuario)
     }
+
+
+    val usuarioAtual = usuario
 
     Surface(
         modifier = Modifier.fillMaxSize(),
@@ -98,20 +103,22 @@ fun TelaPesquisa(navController: NavController, idUsuario: Int = 0) {
 
                 Spacer(modifier = Modifier.height(40.dp))
 
-                BarraPesquisa(
-                    usuarios = Dados.usuarios,
-                    usuarioLogado = usuario,
-                    idsAmigos = idsAmigos,
-                    onAdicionarAmigo = { amigo ->
-                        coroutineScope.launch {
-                            if (amigo.id != idUsuario && amigo.id !in idsAmigos) {
-                                adicionarAmigoBanco(usuarioDAO, idUsuario, amigo.id)
-                                idsAmigos = idsAmigos + amigo.id
+                if(usuarioAtual != null) {
+                    BarraPesquisa(
+                        usuarios = listaUsuarios,
+                        usuarioLogado = usuarioAtual,
+                        idsAmigos = idsAmigos,
+                        onAdicionarAmigo = { amigo ->
+                            coroutineScope.launch {
+                                if (amigo.id != idUsuario && amigo.id !in idsAmigos) {
+                                    adicionarAmigoBanco(usuarioDAO, idUsuario, amigo.id)
+                                    idsAmigos = idsAmigos + amigo.id
+                                }
                             }
-                        }
-                    },
-                    navController = navController
-                )
+                        },
+                        navController = navController
+                    )
+                }
             }
         }
     }
@@ -246,7 +253,6 @@ fun BarraPesquisa(
 fun Usuarios(usuario: Usuario,
              usuarioLogado: Usuario,
              isAmigo: Boolean,
-             amigosIds: List<Int> = emptyList(),
              imagem: Int? = null,
              onAdicionarAmigo: (Usuario) -> Unit) {
     Row(
