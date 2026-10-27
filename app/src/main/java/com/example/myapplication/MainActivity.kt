@@ -23,17 +23,6 @@ class MainActivity : ComponentActivity() {
             LaunchedEffect(Unit) {
                 carregarDadosBanco(AppDatabase.getDatabase(context))
             }
-//
-//            LaunchedEffect(Unit) {
-//                val db = AppDatabase.getDatabase(context)
-//
-//                // Apaga os dados de todas as tabelas do Room
-//                withContext(Dispatchers.IO) {
-//                    db.clearAllTables()
-//                }
-//
-//
-//            }
 
             MyApplicationTheme {
                 val navController = rememberNavController()

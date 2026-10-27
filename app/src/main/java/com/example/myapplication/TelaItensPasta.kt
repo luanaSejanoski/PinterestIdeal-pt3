@@ -211,15 +211,20 @@ fun TelaItensPasta(navController: NavController,idPasta: Int = 0) {
 
 
     LaunchedEffect(idPasta) {
-        CoroutineScope(Dispatchers.IO).launch {
-            val pastaEncontrada = buscarPastaId(pastaDAO, idPasta)
-            val total = contarPinsPasta(pastaDAO, idPasta)
-            val lista = buscarPinsPasta(pastaDAO, idPasta)
+            val pastaEncontrada = withContext(Dispatchers.IO){
+                buscarPastaId(pastaDAO, idPasta)
+            }
+            val total = withContext(Dispatchers.IO){
+                contarPinsPasta(pastaDAO, idPasta)
+            }
+            val lista = withContext(Dispatchers.IO){
+                buscarPinsPasta(pastaDAO, idPasta)
+            }
 
             pasta = pastaEncontrada
             totalPinsPasta = total
             pins = lista
-        }
+
     }
 
     val pastaAtual = pasta

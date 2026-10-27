@@ -71,7 +71,7 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TelaVerAmigos(navController: NavController, idUsuario: Int = 0){
-    val usuario = Dados.usuarios.find { it.id == idUsuario } ?: return
+
     val context = LocalContext.current
     val db = AppDatabase.getDatabase(context)
     val usuarioDAO = db.usuarioDAO()
@@ -79,9 +79,7 @@ fun TelaVerAmigos(navController: NavController, idUsuario: Int = 0){
     var amigos by remember { mutableStateOf<List<Usuario>>(emptyList()) }
 
     LaunchedEffect(idUsuario) {
-        CoroutineScope(Dispatchers.IO).launch {
             amigos = usuarioDAO.buscarAmigos(idUsuario)
-        }
     }
 
     Surface(
@@ -100,11 +98,6 @@ fun TelaVerAmigos(navController: NavController, idUsuario: Int = 0){
                         .padding(horizontal = 5.dp, vertical = 20.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    BotaoVoltar(
-                        navController = navController,
-                        onClick = { navController.navigate(Rotas.HOME) }
-                    )
-
                     Text(
                         text = "Amigos",
                         color = Color.White,

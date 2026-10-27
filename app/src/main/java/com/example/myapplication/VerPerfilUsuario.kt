@@ -51,6 +51,7 @@ import com.example.myapplication.data.Pasta
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 @Composable
 fun TelaVerPerfilUsuario(navController: NavHostController, idUsuario: Int = 1){
@@ -66,10 +67,13 @@ fun TelaVerPerfilUsuario(navController: NavHostController, idUsuario: Int = 1){
     var totalAmigos by remember{mutableStateOf(0)}
 
     LaunchedEffect(idUsuario) {
-        CoroutineScope(Dispatchers.IO).launch {
-            pastasDoUsuario = buscarPastas(pastaDAO, idUsuario)
-            totalAmigos = usuarioDAO.contarAmigos(idUsuario)
-        }
+            pastasDoUsuario = withContext(Dispatchers.IO){
+                buscarPastas(pastaDAO, idUsuario)
+            }
+
+            totalAmigos = withContext(Dispatchers.IO){
+                usuarioDAO.contarAmigos(idUsuario)
+            }
     }
 
     Surface(

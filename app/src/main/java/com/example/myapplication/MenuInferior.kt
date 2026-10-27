@@ -39,7 +39,14 @@ fun MenuInferior(navController: NavHostController) {
         NavigationBarItem(
             selected = rotaAtual == Rotas.HOME,
             onClick = {
-                navController.navigate(Rotas.HOME)
+                    if (navController.currentDestination?.route != Rotas.HOME) {
+                        navController.navigate(Rotas.HOME) {
+                            popUpTo(Rotas.HOME) {
+                                inclusive = false
+                            }
+                            launchSingleTop = true
+                        }
+                    }
             },
             icon = {
                 Icon(

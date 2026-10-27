@@ -51,6 +51,7 @@ import com.example.myapplication.data.Dados
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 @Composable
 fun TelaMsg(navController: NavController,
@@ -67,30 +68,17 @@ fun TelaMsg(navController: NavController,
     var amigo by remember { mutableStateOf<Usuario?>(null) }
 
     LaunchedEffect(idUsuario, idAmigo) {
-        CoroutineScope(Dispatchers.IO).launch {
-            mensagens = mensagemDAO.buscarConversa(idUsuario, idAmigo)
-            amigo = usuarioDAO.buscarUsuarioId(idAmigo)
-        }
+            mensagens = withContext(Dispatchers.IO){
+                mensagemDAO.buscarConversa(idUsuario, idAmigo)
+            }
+            amigo = withContext(Dispatchers.IO){
+                usuarioDAO.buscarUsuarioId(idAmigo)
+            }
+
     }
 
-//    val remetente = Dados.usuarios.find { it.id == 0 }
-//    val destinatario = Dados.usuarios.find { it.id == idAmigo }
-//
-//    val mensagensConversa = Dados.mensagens.filter { mensagem ->
-//        (mensagem.remetente.id == 0 &&
-//                mensagem.destinatario.id == idAmigo) ||
-//
-//                (mensagem.remetente.id == idAmigo &&
-//                        mensagem.destinatario.id == 0)
-//    }
 
     val listaState = rememberLazyListState()
-
-//    var proximoId by remember {
-//        mutableIntStateOf(
-//            (mensagens.maxOfOrNull { it.id } ?: 0) + 1
-//        )
-//    }
 
     // Enviar mensagem
     fun enviarMensagem() {

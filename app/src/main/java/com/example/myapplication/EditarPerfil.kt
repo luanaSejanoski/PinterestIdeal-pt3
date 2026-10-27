@@ -142,47 +142,6 @@ fun CampoEditar(nomeCampo: String,
     )
 }
 
-//fun salvarAlteracoes(
-//    usuario: Usuario, nomeExibicao: String,
-//    nomeUsuario: String, biografia: String,
-//    email: String, fotoPerfil: Uri?
-//){
-//    val usuarioAtualizado = usuario.copy(
-//        nomeExibicao = nomeExibicao,
-//        nomeUsuario = nomeUsuario,
-//        biografia = biografia,
-//        email = email,
-//        foto = fotoPerfil
-//    )
-//
-//    val indice = Dados.usuarios.indexOfFirst {
-//        it.id == usuario.id
-//    }
-//
-//    if(indice != -1){
-//        Dados.usuarios[indice] = usuarioAtualizado
-//    }
-//}
-
-suspend fun salvarAlteracoes(
-    usuarioDAO: UsuarioDAO,
-    usuario: Usuario,
-    nomeExibicao: String,
-    nomeUsuario: String,
-    biografia: String,
-    email: String,
-    fotoPerfil: Uri?
-) {
-    val usuarioAtualizado = usuario.copy(
-        nomeExibicao = nomeExibicao,
-        nomeUsuario = nomeUsuario,
-        biografia = biografia,
-        email = email,
-        foto = fotoPerfil?.toString() ?: usuario.foto
-    )
-
-    usuarioDAO.atualizarUsuario(usuarioAtualizado)
-}
 
 @Composable
 fun geraBotao(x: Float, texto: String, habilitado: Boolean,
@@ -214,16 +173,7 @@ fun TelaEditarPerfil(navController: NavController, idUsuario: Int = 0) {
     val usuarioDAO = remember { db.usuarioDAO() }
     val coroutineScope = rememberCoroutineScope()
 
-//    val usuario = Dados.usuarios.find { it.id == idUsuario }?: return
     var usuario by remember { mutableStateOf<Usuario?>(null) }
-
-
-//    var nomeExibicao by remember { mutableStateOf(usuario.nomeExibicao) }
-//    var nomeUsuario by remember { mutableStateOf(usuario.nomeUsuario) }
-//    var biografia by remember { mutableStateOf(usuario.biografia) }
-//    var email by remember { mutableStateOf(usuario.email) }
-////    var fotoPerfil by remember { mutableStateOf(usuario.foto) }
-//    var fotoPerfil by remember { mutableStateOf(usuario.foto) }
 
     var nomeExibicao by remember { mutableStateOf("") }
     var nomeUsuario by remember { mutableStateOf("") }
@@ -257,8 +207,6 @@ fun TelaEditarPerfil(navController: NavController, idUsuario: Int = 0) {
 
             fotoPerfil = uri.toString()
         }
-//            fotoPerfil = uri
-
         }
 
 
@@ -281,12 +229,7 @@ fun TelaEditarPerfil(navController: NavController, idUsuario: Int = 0) {
                     BotaoVoltar(navController=navController)
                     Text(text = "Editar perfil", color = Color.White, textAlign = TextAlign.Center)
 
-//                    val habilitado =
-//                        nomeExibicao != usuario.nomeExibicao ||
-//                                nomeUsuario != usuario.nomeUsuario ||
-//                                biografia != usuario.biografia ||
-//                                email != usuario.email ||
-//                                fotoPerfil != usuario.foto
+
                     val habilitado =
                         nomeExibicao != usuarioAtual.nomeExibicao ||
                                 nomeUsuario != usuarioAtual.nomeUsuario ||
@@ -298,12 +241,6 @@ fun TelaEditarPerfil(navController: NavController, idUsuario: Int = 0) {
                         habilitado,
                         corHabilitado = Color.Red,
                         onclick = {
-//                            salvarAlteracoes(
-//                                usuario, nomeExibicao, nomeUsuario,
-//                                biografia, email, fotoPerfil
-//                            )
-//
-//                            navController.navigate(Rotas.HOME)
                             coroutineScope.launch {
                                 atualizarDadosUsuario(
                                     usuarioDAO = usuarioDAO,

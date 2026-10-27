@@ -45,6 +45,7 @@ import com.example.myapplication.data.Pasta
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -55,7 +56,6 @@ fun TelaVerPastaUsuario(navController: NavController, idPasta: Int) {
     val context = LocalContext.current
     val db = AppDatabase.getDatabase(context)
     val pastaDAO = db.pastaDAO()
-    val pinDAO = db.pinDAO()
     var pasta by remember {mutableStateOf<Pasta?>(null)}
 
     var totalPinsPasta by remember { mutableStateOf(0) }
@@ -64,16 +64,23 @@ fun TelaVerPastaUsuario(navController: NavController, idPasta: Int) {
 
 
     LaunchedEffect(idPasta) {
-        CoroutineScope(Dispatchers.IO).launch {
-            val pastaEncontrada = buscarPastaId(pastaDAO, idPasta)
-            val total = contarPinsPasta(pastaDAO, idPasta)
-            val lista = buscarPinsPasta(pastaDAO, idPasta)
+            val pastaEncontrada = withContext(Dispatchers.IO){
+                buscarPastaId(pastaDAO, idPasta)
+            }
+
+            val total = withContext(Dispatchers.IO){
+                contarPinsPasta(pastaDAO, idPasta)
+            }
+
+            val lista = withContext(Dispatchers.IO){
+                buscarPinsPasta(pastaDAO, idPasta)
+            }
 
             pasta = pastaEncontrada
             totalPinsPasta = total
             pins = lista
         }
-    }
+
 
     val pastaAtual = pasta
     if (pastaAtual == null) {
