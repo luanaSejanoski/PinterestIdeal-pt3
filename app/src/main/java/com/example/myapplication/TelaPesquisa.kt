@@ -102,22 +102,6 @@ fun TelaPesquisa(navController: NavController, idUsuario: Int = 0) {
                     usuarios = Dados.usuarios,
                     usuarioLogado = usuario,
                     idsAmigos = idsAmigos,
-//                    onAdicionarAmigo = { amigo ->
-//                        if (
-//                            amigo.id != usuario.id &&
-//                            amigo.id !in usuario.amigos
-//                        ) {
-//                            usuario.amigos.add(amigo.id)
-//                        }
-//                    },
-//                    onAdicionarAmigo = { amigo ->
-//                        coroutineScope.launch {
-//                            if (amigo.id != usuario.id) {
-//                                val relacao = UsuarioAmigo(usuarioId = usuario.id, amigoId = amigo.id)
-//                                usuarioDAO.adicionarAmigo(relacao)
-//                            }
-//                        }
-//                    },
                     onAdicionarAmigo = { amigo ->
                         coroutineScope.launch {
                             if (amigo.id != usuario.id && amigo.id !in idsAmigos) {
@@ -321,13 +305,6 @@ fun Usuarios(usuario: Usuario,
                 texto = "Adicionar",
                 adicionado = adicionado,
                 onClick = {
-//                    if (
-//                        usuario.id != usuarioLogado.id &&
-//                        usuario.id !in usuarioLogado.amigos
-//                    ) {
-//                        onAdicionarAmigo(usuario)
-//                        adicionado = true
-//                    }
                     if (usuario.id != usuarioLogado.id) {
                         onAdicionarAmigo(usuario)
                         adicionado = true

@@ -95,10 +95,9 @@ fun gerarPasta(pasta: Pasta, pastaDAO: PastaDAO, onclick: () -> Unit){
     var pins by remember { mutableStateOf<List<Pin>>(emptyList()) }
 
     LaunchedEffect(pasta.id) {
-        CoroutineScope(Dispatchers.IO).launch {
             totalPinsPasta = contarPinsPasta(pastaDAO,pasta.id)
             pins = buscarDoisUltimosPins(pastaDAO, pasta.id)
-        }
+
     }
 
 
@@ -183,10 +182,16 @@ fun TelaPerfil(navController: NavHostController, idUsuario: Int = 0) {
     var totalAmigos by remember{mutableStateOf(0)}
 
     LaunchedEffect(idUsuario) {
-        CoroutineScope(Dispatchers.IO).launch {
-            usuario = buscarUsuarioPorId(usuarioDAO,idUsuario)
-            pastasDoUsuario = buscarPastas(pastaDAO, idUsuario)
-            totalAmigos = contarAmigosUsuario(usuarioDAO,idUsuario)
+        usuario = withContext(Dispatchers.IO) {
+            buscarUsuarioPorId(usuarioDAO, idUsuario)
+        }
+
+        pastasDoUsuario = withContext(Dispatchers.IO) {
+            buscarPastas(pastaDAO, idUsuario)
+        }
+
+        totalAmigos = withContext(Dispatchers.IO) {
+            contarAmigosUsuario(usuarioDAO, idUsuario)
         }
     }
 
