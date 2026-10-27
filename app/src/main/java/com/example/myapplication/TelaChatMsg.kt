@@ -69,10 +69,10 @@ fun TelaMsg(navController: NavController,
 
     LaunchedEffect(idUsuario, idAmigo) {
             mensagens = withContext(Dispatchers.IO){
-                mensagemDAO.buscarConversa(idUsuario, idAmigo)
+                buscarConversa(mensagemDAO, idUsuario, idAmigo)
             }
             amigo = withContext(Dispatchers.IO){
-                usuarioDAO.buscarUsuarioId(idAmigo)
+                buscarUsuarioPorId(usuarioDAO,idAmigo)
             }
 
     }
@@ -93,7 +93,7 @@ fun TelaMsg(navController: NavController,
                         destinatarioId = idAmigo
                     )
                 )
-                mensagens = mensagemDAO.buscarConversa(idUsuario, idAmigo)
+                mensagens =  buscarConversa(mensagemDAO, idUsuario, idAmigo)
             }
         }
     }

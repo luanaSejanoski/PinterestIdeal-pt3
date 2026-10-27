@@ -54,19 +54,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-//class VerAmigos : ComponentActivity() {
-//    override fun onCreate(savedInstanceState: Bundle?) {
-//        super.onCreate(savedInstanceState)
-//        setContent {
-//            MyApplicationTheme {
-//              // A surface container using the 'background' color from the theme
-//                Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
-//                    TelaVerAmigos()
-//                 }
-//            }
-//        }
-//    }
-//}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -79,7 +66,7 @@ fun TelaVerAmigos(navController: NavController, idUsuario: Int = 0){
     var amigos by remember { mutableStateOf<List<Usuario>>(emptyList()) }
 
     LaunchedEffect(idUsuario) {
-            amigos = usuarioDAO.buscarAmigos(idUsuario)
+            amigos = buscarAmigosDoUsuario(usuarioDAO,idUsuario)
     }
 
     Surface(
@@ -112,8 +99,8 @@ fun TelaVerAmigos(navController: NavController, idUsuario: Int = 0){
                     amigos = amigos,
                     onRemoverAmigo = { amigoId ->
                         CoroutineScope(Dispatchers.IO).launch {
-                            usuarioDAO.removerAmigo(idUsuario, amigoId)
-                            amigos = usuarioDAO.buscarAmigos(idUsuario)
+                            removerAmigoUsuario(usuarioDAO,idUsuario, amigoId)
+                            amigos = buscarAmigosDoUsuario(usuarioDAO,idUsuario)
                         }
                     },
                     onMensagemClick = { amigo ->

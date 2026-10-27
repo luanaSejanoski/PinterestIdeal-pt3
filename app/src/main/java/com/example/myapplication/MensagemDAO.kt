@@ -14,5 +14,5 @@ interface MensagemDAO {
         OR (remetenteId = :d AND destinatarioId = :r)
         ORDER BY id
         """)
-    suspend fun buscarConversa(r: Int, d: Int): List<Mensagem>
+    suspend fun buscar(r: Int, d: Int): List<Mensagem>
 }

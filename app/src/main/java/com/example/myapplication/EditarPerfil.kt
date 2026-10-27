@@ -182,7 +182,7 @@ fun TelaEditarPerfil(navController: NavController, idUsuario: Int = 0) {
     var fotoPerfil by remember { mutableStateOf<String?>(null) }
 
     LaunchedEffect(idUsuario) {
-        val usuarioBanco = usuarioDAO.buscarUsuarioId(idUsuario)
+        val usuarioBanco = buscarUsuarioPorId(usuarioDAO,idUsuario)
         if (usuarioBanco != null) {
             usuario = usuarioBanco
             nomeExibicao = usuarioBanco.nomeExibicao

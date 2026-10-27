@@ -171,7 +171,7 @@ suspend fun buscarUsuarioPorId(usuarioDAO: UsuarioDAO, idUsuario: Int):Usuario {
    return try {
         usuarioDAO.buscarUsuarioId(idUsuario)
     } catch (e: Exception) {
-        Log.e("Erro ao adicionar amigo...", "Msg ${e.message}")
+        Log.e("Erro ao buscar usuário por id...", "Msg ${e.message}")
         throw e
     }
 }
@@ -180,8 +180,26 @@ suspend fun contarAmigosUsuario(usuarioDAO: UsuarioDAO, usuarioId: Int): Int{
     return try{
         usuarioDAO.contarAmigos(usuarioId)
     }catch (e: Exception){
-        Log.e("Erro ao adicionar amigo...", "Msg ${e.message}")
+        Log.e("Erro ao contar amigos...", "Msg ${e.message}")
         0
+    }
+}
+
+suspend fun removerAmigoUsuario(usuarioDAO: UsuarioDAO, usuarioId: Int, amigoId: Int){
+     try{
+        usuarioDAO.removerAmigo(usuarioId, amigoId)
+    }catch (e: Exception){
+        Log.e("Erro ao remover amigo...", "Msg ${e.message}")
+
+    }
+}
+
+suspend fun buscarConversa(mensagemDAO: MensagemDAO, usuarioId: Int, amigoId: Int): List<Mensagem>{
+   return try{
+        mensagemDAO.buscar(usuarioId, amigoId)
+    }catch (e: Exception){
+        Log.e("Erro ao buscar conversa...", "Msg ${e.message}")
+        throw e
     }
 }
 

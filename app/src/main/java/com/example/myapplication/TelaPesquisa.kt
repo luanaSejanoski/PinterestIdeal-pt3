@@ -75,7 +75,7 @@ fun TelaPesquisa(navController: NavController, idUsuario: Int = 0) {
     var listaUsuarios by remember { mutableStateOf<List<Usuario>>(emptyList()) }
 
     LaunchedEffect(Unit) {
-        val listaAmigosBanco = buscarAmigosDoUsuario(usuarioDAO, usuario.id)
+        val listaAmigosBanco = buscarAmigosDoUsuario(usuarioDAO, idUsuario)
         idsAmigos = listaAmigosBanco.map { amigo -> amigo.id }
 
         listaUsuarios = listarUsuarios(usuarioDAO)
@@ -104,8 +104,8 @@ fun TelaPesquisa(navController: NavController, idUsuario: Int = 0) {
                     idsAmigos = idsAmigos,
                     onAdicionarAmigo = { amigo ->
                         coroutineScope.launch {
-                            if (amigo.id != usuario.id && amigo.id !in idsAmigos) {
-                                adicionarAmigoBanco(usuarioDAO, usuario.id, amigo.id)
+                            if (amigo.id != idUsuario && amigo.id !in idsAmigos) {
+                                adicionarAmigoBanco(usuarioDAO, idUsuario, amigo.id)
                                 idsAmigos = idsAmigos + amigo.id
                             }
                         }
@@ -257,14 +257,6 @@ fun Usuarios(usuario: Usuario,
         horizontalArrangement = Arrangement.SpaceBetween
     )
     {
-//        var adicionado by remember(usuario.id) {
-//            mutableStateOf(usuario.id in usuarioLogado.amigos)
-//        }
-
-
-//        var adicionado by remember {
-//            mutableStateOf(usuario.id in amigosIds)
-//        }
 
         var adicionado by remember(isAmigo) {
             mutableStateOf(isAmigo)
