@@ -4,6 +4,7 @@ import android.R
 import android.util.Log
 import androidx.room3.Query
 import com.example.myapplication.data.Pasta
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 
 suspend fun buscarPastas(pastaDAO: PastaDAO, usuarioId: Int): List<Pasta> {
@@ -194,7 +195,7 @@ suspend fun removerAmigoUsuario(usuarioDAO: UsuarioDAO, usuarioId: Int, amigoId:
 }
 
 //MENSAGENS
-suspend fun buscarConversa(mensagemDAO: MensagemDAO, usuarioId: Int, amigoId: Int): List<Mensagem>{
+ fun buscarConversa(mensagemDAO: MensagemDAO, usuarioId: Int, amigoId: Int): Flow<List<Mensagem>> {
    return try{
         mensagemDAO.buscar(usuarioId, amigoId)
     }catch (e: Exception){
