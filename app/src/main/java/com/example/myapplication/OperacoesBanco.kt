@@ -97,10 +97,6 @@ suspend fun adicionarPin(uri: String, largura: Int, altura: Int, pinDAO: PinDAO)
 suspend fun excluirPinDaPasta(pinId: Int, pastaId: Int, pastaDAO: PastaDAO, pinDAO: PinDAO){
     try{
         pastaDAO.excluirPinPasta(pastaId, pinId)
-
-        if(pastaDAO.contarPastasPin(pinId) == 0){
-            pinDAO.excluirPin(pinDAO.pinsSemPasta())
-        }
     }catch (e: Exception){
         Log.e("Erro ao excluir o pin da pasta...", "Msg ${e.message}")
 

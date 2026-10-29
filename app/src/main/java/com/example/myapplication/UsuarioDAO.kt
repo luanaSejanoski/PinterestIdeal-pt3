@@ -4,6 +4,7 @@ import androidx.room3.Dao
 import androidx.room3.Insert
 import androidx.room3.Query
 import androidx.room3.Update
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface UsuarioDAO {
@@ -20,13 +21,13 @@ interface UsuarioDAO {
     suspend fun contarAmizades(): Int
 
     @Query(" SELECT * FROM Usuario WHERE id > 0")
-    suspend fun listarTodosUsuarios() : List<Usuario>
+    fun listarTodosUsuarios() : Flow<List<Usuario>>
 
     @Update
     suspend fun atualizarUsuario(usuario: Usuario)
 
-    @Query("SELECT * FROM Usuario")
-    suspend fun buscarTodosUsuarios(): List<Usuario>
+//    @Query("SELECT * FROM Usuario")
+//    suspend fun buscarTodosUsuarios(): List<Usuario>
 
     @Insert
     suspend fun adicionarAmigo(usuarioAmigo: UsuarioAmigo)
@@ -39,7 +40,7 @@ interface UsuarioDAO {
     INNER JOIN UsuarioAmigo ua ON ua.amigoId = u.id
     WHERE ua.usuarioId = :idUsuario
     """)
-    suspend fun buscarAmigos(idUsuario: Int): List<Usuario>
+    fun buscarAmigos(idUsuario: Int): Flow<List<Usuario>>
 
     @Query("""
     DELETE FROM UsuarioAmigo
