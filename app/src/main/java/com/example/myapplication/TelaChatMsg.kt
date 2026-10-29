@@ -74,7 +74,6 @@ fun TelaMsg(navController: NavController,
             amigo = withContext(Dispatchers.IO){
                 buscarUsuarioPorId(usuarioDAO,idAmigo)
             }
-
     }
 
 
