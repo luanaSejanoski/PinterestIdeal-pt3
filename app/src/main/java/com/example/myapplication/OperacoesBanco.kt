@@ -4,10 +4,11 @@ import android.R
 import android.util.Log
 import androidx.room3.Query
 import com.example.myapplication.data.Pasta
+import kotlinx.coroutines.flow.first
 
 suspend fun buscarPastas(pastaDAO: PastaDAO, usuarioId: Int): List<Pasta> {
     return try {
-        pastaDAO.pastasDoUsuario(usuarioId)
+        pastaDAO.pastasDoUsuario(usuarioId).first()
     } catch (e: Exception) {
         Log.e("Erro ao buscar pastas...", "Msg ${e.message}")
         emptyList()
@@ -25,7 +26,7 @@ suspend fun buscarPastaId(pastaDAO: PastaDAO, pastaId: Int): Pasta{
 
 suspend fun buscarPinsPasta(pastaDAO: PastaDAO, pastaId: Int) : List<Pin>{
     return try{
-        pastaDAO.pinsDaPasta(pastaId)
+        pastaDAO.pinsDaPasta(pastaId).first()
     }catch (e: Exception){
         Log.e("Erro ao buscar os pins da pastas...", "Msg ${e.message}")
         emptyList()
@@ -42,7 +43,7 @@ suspend fun contarPinsPasta(pastaDAO: PastaDAO, idPasta: Int): Int{
 }
 suspend fun buscarDoisUltimosPins(pastaDAO: PastaDAO, idPasta: Int): List<Pin> {
     return try {
-        pastaDAO.doisUltimosPins(idPasta)
+        pastaDAO.doisUltimosPins(idPasta).first()
     } catch (e: Exception) {
         Log.e("Erro ao buscar pins...", "Msg ${e.message}")
         emptyList()
@@ -81,8 +82,6 @@ suspend fun adicionarPinNaPasta(pinId: Int, pastaId: Int, pastaDAO: PastaDAO){
         Log.e("Erro ao adicionar o pin na pasta...", "Msg ${e.message}")
     }
 }
-
-
 
 //Operações Pin
 suspend fun adicionarPin(uri: String, largura: Int, altura: Int, pinDAO: PinDAO): Int{
@@ -194,6 +193,7 @@ suspend fun removerAmigoUsuario(usuarioDAO: UsuarioDAO, usuarioId: Int, amigoId:
     }
 }
 
+//MENSAGENS
 suspend fun buscarConversa(mensagemDAO: MensagemDAO, usuarioId: Int, amigoId: Int): List<Mensagem>{
    return try{
         mensagemDAO.buscar(usuarioId, amigoId)
