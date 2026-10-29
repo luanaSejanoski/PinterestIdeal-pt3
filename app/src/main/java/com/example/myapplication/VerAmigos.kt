@@ -254,12 +254,12 @@ fun ItemAmigo(
                 }
             }
 
-            // Lado Direito: 2 Ícones (Mensagem e Excluir)
+            // Lado Direito: 2 icones (Mensagem e Excluir)
             Row(
                 horizontalArrangement = Arrangement.spacedBy(4.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                // Ícone de Mensagem
+                // icone de Mensagem
                 IconButton(onClick = onMensagemClick) {
                     Icon(
                         painter = painterResource(id = R.drawable.chat),
@@ -269,7 +269,7 @@ fun ItemAmigo(
                     )
                 }
 
-                // Ícone de Excluir (Remove da lista de amigos)
+                // icone de Excluir (Remove da lista de amigos)
                 IconButton(onClick = onExcluirClick) {
                     Icon(
                         imageVector = Icons.Default.Delete,

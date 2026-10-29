@@ -5,14 +5,12 @@ import androidx.room3.Delete
 import androidx.room3.Insert
 import androidx.room3.Query
 import androidx.room3.Update
+import kotlinx.coroutines.flow.Flow
 
 
 @Dao
 interface PinDAO {
     @Insert suspend fun adicionar(pin: Pin) : Long
-
-    @Query("SELECT * FROM Pin WHERE id NOT IN (SELECT pinId FROM PastaPin)")
-    suspend fun pinsSemPasta(): List<Pin>
 
     @Delete
     suspend fun excluirPin(pins: List<Pin>)
