@@ -9,24 +9,6 @@ import kotlinx.coroutines.flow.Flow
 class UsuarioRepository(
     private val usuarioDAO: UsuarioDAO
 ){
-    suspend fun atualizarDadosUsuario(
-        usuarioDAO: UsuarioDAO,
-        usuario: Usuario,
-        nomeExibicao: String,
-        nomeUsuario: String,
-        biografia: String,
-        email: String,
-        fotoPerfil: String?
-    ) {
-        val usuarioAtualizado = usuario.copy(
-            nomeExibicao = nomeExibicao,
-            nomeUsuario = nomeUsuario,
-            biografia = biografia,
-            email = email,
-            foto = fotoPerfil
-        )
-        usuarioDAO.atualizarUsuario(usuarioAtualizado)
-    }
 
     fun listarUsuarios(): Flow<List<Usuario>> {
         return usuarioDAO.listarTodosUsuarios()
@@ -50,5 +32,24 @@ class UsuarioRepository(
 
     suspend fun removerAmigoUsuario(usuarioId: Int, amigoId: Int){
         usuarioDAO.removerAmigo(usuarioId, amigoId)
+    }
+
+    suspend fun atualizarDadosUsuario(
+        usuario: Usuario,
+        nomeExibicao: String,
+        nomeUsuario: String,
+        biografia: String,
+        email: String,
+        fotoPerfil: String?
+    ) {
+            val usuarioAtualizado = usuario.copy(
+                nomeExibicao = nomeExibicao,
+                nomeUsuario = nomeUsuario,
+                biografia = biografia,
+                email = email,
+                foto = fotoPerfil
+            )
+            usuarioDAO.atualizarUsuario(usuarioAtualizado)
+
     }
 }

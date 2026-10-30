@@ -7,5 +7,6 @@ data class VerPastaUsuarioUiState(
     val pasta: Pasta? = null,
     val pins: List<Pin> = emptyList(),
     val totalPinsPasta: Int = 0,
-    val imagemAmpliada: Pin? = null
+    val imagemAmpliada: Pin? = null,
+    val nomePasta: String = ""
 )

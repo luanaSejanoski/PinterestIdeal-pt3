@@ -137,9 +137,9 @@ suspend fun atualizarDadosUsuario(
     }
 }
 
-suspend fun listarUsuarios(usuarioDAO: UsuarioDAO): List<Usuario> {
+ fun listarUsuarios(usuarioDAO: UsuarioDAO): Flow<List<Usuario>> {
     return try {
-        usuarioDAO.listarTodosUsuarios()
+        usuarioDAO.listarTodosUsuarios().
     } catch (e: Exception) {
         Log.e("Erro ao listar usuários...", "Msg ${e.message}")
         emptyList()
