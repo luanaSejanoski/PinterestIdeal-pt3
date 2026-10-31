@@ -2,6 +2,7 @@ package com.example.myapplication
 
 import android.util.Log
 import com.example.myapplication.data.Dados
+import com.example.myapplication.data.local.AppDatabase
 
 
 suspend fun carregarDadosBanco(db: AppDatabase) {

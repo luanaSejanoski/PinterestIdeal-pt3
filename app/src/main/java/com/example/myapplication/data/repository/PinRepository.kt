@@ -1,8 +1,8 @@
 package com.example.myapplication.data.repository
 
-import com.example.myapplication.PastaDAO
-import com.example.myapplication.Pin
-import com.example.myapplication.PinDAO
+import com.example.myapplication.data.local.PastaDAO
+import com.example.myapplication.data.local.Pin
+import com.example.myapplication.data.local.PinDAO
 
 class PinRepository(
     private val pinDAO: PinDAO,

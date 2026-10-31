@@ -1,18 +1,19 @@
-package com.example.myapplication
+package com.example.myapplication.data.local
 
 import androidx.room3.Dao
 import androidx.room3.Delete
 import androidx.room3.Insert
 import androidx.room3.Query
 import androidx.room3.Update
-import com.example.myapplication.data.Pasta
 import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface PastaDAO {
-    @Insert suspend fun criar(pasta: Pasta)
+    @Insert
+    suspend fun criar(pasta: Pasta)
 
-    @Insert suspend fun vincular(ligacao: PastaPin)
+    @Insert
+    suspend fun vincular(ligacao: PastaPin)
 
     @Query("SELECT * FROM Pasta WHERE usuarioId = :usuarioId")
     fun pastasDoUsuario(usuarioId: Int): Flow<List<Pasta>>
@@ -55,7 +56,8 @@ interface PastaDAO {
     @Query("SELECT COUNT(*) FROM PastaPin WHERE pinId = :idPin")
     suspend fun contarPastasPin(idPin: Int): Int
 
-    @Delete suspend fun excluir(pasta: Pasta)
+    @Delete
+    suspend fun excluir(pasta: Pasta)
 
     @Update
     suspend fun atualizar(pasta: Pasta)

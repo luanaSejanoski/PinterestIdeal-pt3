@@ -1,7 +1,7 @@
 package com.example.myapplication.ui.pasta
 
-import com.example.myapplication.Pin
-import com.example.myapplication.data.Pasta
+import com.example.myapplication.data.local.Pin
+import com.example.myapplication.data.local.Pasta
 
 data class VerPastaUsuarioUiState(
     val pasta: Pasta? = null,

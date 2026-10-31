@@ -42,18 +42,18 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.net.toUri
 import coil.compose.rememberAsyncImagePainter
-import com.example.myapplication.data.Dados
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
-import com.example.myapplication.data.Pasta
-import kotlinx.coroutines.CoroutineScope
+import com.example.myapplication.data.local.Pasta
+import com.example.myapplication.data.local.AppDatabase
+import com.example.myapplication.data.local.PastaDAO
+import com.example.myapplication.data.local.Pin
+import com.example.myapplication.data.local.Usuario
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 @Composable

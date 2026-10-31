@@ -1,10 +1,6 @@
 package com.example.myapplication
 import android.content.Intent
-import android.net.Uri
-import android.os.Bundle
-import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
@@ -21,7 +17,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -36,11 +31,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.myapplication.ui.theme.MyApplicationTheme
 //import androidx.compose.material.icons.filled.ChevronLeft
 //import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material3.Button
@@ -56,9 +48,9 @@ import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 
 
-import com.example.myapplication.data.Dados
+import com.example.myapplication.data.local.AppDatabase
+import com.example.myapplication.data.local.Usuario
 import kotlinx.coroutines.launch
-import kotlin.math.sin
 
 
 @Composable

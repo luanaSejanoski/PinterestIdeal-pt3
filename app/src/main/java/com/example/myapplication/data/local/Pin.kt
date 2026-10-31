@@ -1,6 +1,5 @@
-package com.example.myapplication
+package com.example.myapplication.data.local
 
-import android.net.Uri
 import androidx.room3.Entity
 import androidx.room3.PrimaryKey
 

@@ -1,7 +1,6 @@
 package com.example.myapplication
 
 
-import android.widget.Toast
 import androidx.compose.material3.TextField
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
@@ -48,8 +47,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.example.myapplication.data.Dados
-import com.example.myapplication.ui.theme.MyApplicationTheme
+import com.example.myapplication.data.local.AppDatabase
+import com.example.myapplication.data.local.Usuario
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

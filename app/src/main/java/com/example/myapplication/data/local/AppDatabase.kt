@@ -1,10 +1,9 @@
-package com.example.myapplication
+package com.example.myapplication.data.local
 
 import android.content.Context
 import androidx.room3.Database
 import androidx.room3.Room
 import androidx.room3.RoomDatabase
-import com.example.myapplication.data.Pasta
 
 @Database(entities = [Pasta::class, Pin::class, PastaPin::class, Usuario::class, UsuarioAmigo::class, Mensagem::class],
     version = 1)

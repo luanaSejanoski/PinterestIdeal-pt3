@@ -1,6 +1,6 @@
 package com.example.myapplication.ui.perfil
 
-import com.example.myapplication.Usuario
+import com.example.myapplication.data.local.Usuario
 
 class EditarPerfilUiState(
     val usuario: Usuario? = null,

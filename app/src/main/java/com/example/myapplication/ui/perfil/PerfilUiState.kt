@@ -1,7 +1,7 @@
 package com.example.myapplication.ui.perfil
 
-import com.example.myapplication.Usuario
-import com.example.myapplication.data.Pasta
+import com.example.myapplication.data.local.Usuario
+import com.example.myapplication.data.local.Pasta
 
 data class PerfilUiState(
     val usuario: Usuario? = null,

@@ -1,4 +1,4 @@
-package com.example.myapplication
+package com.example.myapplication.data.local
 
 import androidx.room3.Dao
 import androidx.room3.Insert
@@ -8,8 +8,10 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface UsuarioDAO {
-    @Insert suspend fun inserir(usuario: Usuario): Long
-    @Insert suspend fun vincular(ligacao: UsuarioAmigo)
+    @Insert
+    suspend fun inserir(usuario: Usuario): Long
+    @Insert
+    suspend fun vincular(ligacao: UsuarioAmigo)
 
     @Query("SELECT * FROM Usuario WHERE id = :id")
     suspend fun buscarUsuarioId(id: Int): Usuario?

@@ -35,29 +35,22 @@ import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldColors
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.runtime.key
-import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavController
-import com.example.myapplication.data.Dados
-import com.example.myapplication.ui.theme.MyApplicationTheme
-import kotlinx.coroutines.coroutineScope
 import androidx.compose.runtime.rememberCoroutineScope
+import com.example.myapplication.data.local.AppDatabase
+import com.example.myapplication.data.local.Usuario
 import kotlinx.coroutines.launch
 
 @Composable

@@ -1,9 +1,9 @@
 package com.example.myapplication.data.repository
 
-import com.example.myapplication.PastaDAO
-import com.example.myapplication.PastaPin
-import com.example.myapplication.Pin
-import com.example.myapplication.data.Pasta
+import com.example.myapplication.data.local.PastaDAO
+import com.example.myapplication.data.local.PastaPin
+import com.example.myapplication.data.local.Pin
+import com.example.myapplication.data.local.Pasta
 import kotlinx.coroutines.flow.Flow
 
 class PastaRepository(

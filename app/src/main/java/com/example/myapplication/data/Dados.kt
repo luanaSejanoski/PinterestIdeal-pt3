@@ -1,13 +1,13 @@
 package com.example.myapplication.data
 
-import android.net.Uri
 import androidx.compose.runtime.mutableStateListOf
-import com.example.myapplication.Mensagem
-import com.example.myapplication.PastaPin
-import com.example.myapplication.Pin
+import com.example.myapplication.data.local.Mensagem
+import com.example.myapplication.data.local.PastaPin
+import com.example.myapplication.data.local.Pin
 import com.example.myapplication.R
-import com.example.myapplication.Usuario
-import com.example.myapplication.UsuarioAmigo
+import com.example.myapplication.data.local.Usuario
+import com.example.myapplication.data.local.UsuarioAmigo
+import com.example.myapplication.data.local.Pasta
 
 object Dados {
     val mensagens = mutableStateListOf<Mensagem>()

@@ -1,9 +1,8 @@
 package com.example.myapplication.data.repository
 
-import android.util.Log
-import com.example.myapplication.Usuario
-import com.example.myapplication.UsuarioAmigo
-import com.example.myapplication.UsuarioDAO
+import com.example.myapplication.data.local.Usuario
+import com.example.myapplication.data.local.UsuarioAmigo
+import com.example.myapplication.data.local.UsuarioDAO
 import kotlinx.coroutines.flow.Flow
 
 class UsuarioRepository(

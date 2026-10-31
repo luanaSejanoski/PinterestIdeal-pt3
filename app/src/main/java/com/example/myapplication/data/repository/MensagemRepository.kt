@@ -1,7 +1,7 @@
 package com.example.myapplication.data.repository
 
-import com.example.myapplication.Mensagem
-import com.example.myapplication.MensagemDAO
+import com.example.myapplication.data.local.Mensagem
+import com.example.myapplication.data.local.MensagemDAO
 import kotlinx.coroutines.flow.Flow
 
 class MensagemRepository(

@@ -2,7 +2,6 @@ package com.example.myapplication
 
 import android.annotation.SuppressLint
 import android.graphics.drawable.Drawable
-import android.net.Uri
 import androidx.compose.ui.window.Dialog
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -16,16 +15,13 @@ import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -59,8 +55,11 @@ import androidx.core.net.toUri
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import coil.compose.rememberAsyncImagePainter
-import com.example.myapplication.data.Dados
-import com.example.myapplication.data.Pasta
+import com.example.myapplication.data.local.Pasta
+import com.example.myapplication.data.local.AppDatabase
+import com.example.myapplication.data.local.PastaDAO
+import com.example.myapplication.data.local.Pin
+import com.example.myapplication.data.local.PinDAO
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

@@ -1,7 +1,5 @@
-package com.example.myapplication
+package com.example.myapplication.data.local
 
-import android.net.Uri
-import androidx.compose.runtime.mutableStateListOf
 import androidx.room3.Entity
 import androidx.room3.PrimaryKey
 
@@ -14,5 +12,3 @@ data class Usuario(
     val email: String,
     val foto: String?
 )
-
-

@@ -1,9 +1,16 @@
 package com.example.myapplication
 
-import android.R
 import android.util.Log
-import androidx.room3.Query
-import com.example.myapplication.data.Pasta
+import com.example.myapplication.data.local.Mensagem
+import com.example.myapplication.data.local.MensagemDAO
+import com.example.myapplication.data.local.Pasta
+import com.example.myapplication.data.local.PastaDAO
+import com.example.myapplication.data.local.PastaPin
+import com.example.myapplication.data.local.Pin
+import com.example.myapplication.data.local.PinDAO
+import com.example.myapplication.data.local.Usuario
+import com.example.myapplication.data.local.UsuarioAmigo
+import com.example.myapplication.data.local.UsuarioDAO
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 
@@ -103,7 +110,7 @@ suspend fun excluirPinDaPasta(pinId: Int, pastaId: Int, pastaDAO: PastaDAO, pinD
     }
 }
 
-suspend fun alterarTituloPin(novoTitulo: String, pin:Pin, pinDAO: PinDAO){
+suspend fun alterarTituloPin(novoTitulo: String, pin: Pin, pinDAO: PinDAO){
     try{
         pin.titulo = novoTitulo
         pinDAO.editar(pin)
@@ -163,7 +170,7 @@ suspend fun adicionarAmigoBanco(usuarioDAO: UsuarioDAO, usuarioId: Int, amigoId:
     }
 }
 
-suspend fun buscarUsuarioPorId(usuarioDAO: UsuarioDAO, idUsuario: Int):Usuario? {
+suspend fun buscarUsuarioPorId(usuarioDAO: UsuarioDAO, idUsuario: Int): Usuario? {
    return try {
         usuarioDAO.buscarUsuarioId(idUsuario)
     } catch (e: Exception) {

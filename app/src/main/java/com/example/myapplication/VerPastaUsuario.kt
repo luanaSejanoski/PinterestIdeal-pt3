@@ -1,6 +1,5 @@
 package com.example.myapplication
 
-import android.net.Uri
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -33,18 +32,16 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.core.net.toUri
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
-import com.example.myapplication.data.Dados
-import com.example.myapplication.data.Pasta
-import kotlinx.coroutines.CoroutineScope
+import com.example.myapplication.data.local.Pasta
+import com.example.myapplication.data.local.AppDatabase
+import com.example.myapplication.data.local.Pin
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 
