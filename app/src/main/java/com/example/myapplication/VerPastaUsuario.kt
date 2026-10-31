@@ -41,6 +41,9 @@ import coil.compose.rememberAsyncImagePainter
 import com.example.myapplication.data.local.Pasta
 import com.example.myapplication.data.local.AppDatabase
 import com.example.myapplication.data.local.Pin
+import com.example.myapplication.data.repository.buscarPastaId
+import com.example.myapplication.data.repository.buscarPinsPasta
+import com.example.myapplication.data.repository.contarPinsPasta
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 

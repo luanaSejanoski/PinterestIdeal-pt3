@@ -1,4 +1,4 @@
-package com.example.myapplication
+package com.example.myapplication.data.repository
 
 import android.util.Log
 import com.example.myapplication.data.local.Mensagem

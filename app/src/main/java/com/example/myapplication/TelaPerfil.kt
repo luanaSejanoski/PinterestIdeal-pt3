@@ -53,6 +53,11 @@ import com.example.myapplication.data.local.AppDatabase
 import com.example.myapplication.data.local.PastaDAO
 import com.example.myapplication.data.local.Pin
 import com.example.myapplication.data.local.Usuario
+import com.example.myapplication.data.repository.buscarDoisUltimosPins
+import com.example.myapplication.data.repository.buscarPastas
+import com.example.myapplication.data.repository.buscarUsuarioPorId
+import com.example.myapplication.data.repository.contarAmigosUsuario
+import com.example.myapplication.data.repository.contarPinsPasta
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -95,7 +100,7 @@ fun gerarPasta(pasta: Pasta, pastaDAO: PastaDAO, onclick: () -> Unit){
     var pins by remember { mutableStateOf<List<Pin>>(emptyList()) }
 
     LaunchedEffect(pasta.id) {
-            totalPinsPasta = contarPinsPasta(pastaDAO,pasta.id)
+            totalPinsPasta = contarPinsPasta(pastaDAO, pasta.id)
             pins = buscarDoisUltimosPins(pastaDAO, pasta.id)
 
     }

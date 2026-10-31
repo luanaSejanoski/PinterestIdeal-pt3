@@ -49,6 +49,8 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.myapplication.data.local.AppDatabase
 import com.example.myapplication.data.local.Usuario
+import com.example.myapplication.data.repository.buscarAmigosDoUsuario
+import com.example.myapplication.data.repository.removerAmigoUsuario
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -65,7 +67,7 @@ fun TelaVerAmigos(navController: NavController, idUsuario: Int = 0){
     var amigos by remember { mutableStateOf<List<Usuario>>(emptyList()) }
 
     LaunchedEffect(idUsuario) {
-            amigos = buscarAmigosDoUsuario(usuarioDAO,idUsuario)
+            amigos = buscarAmigosDoUsuario(usuarioDAO, idUsuario)
     }
 
     Surface(
@@ -98,8 +100,8 @@ fun TelaVerAmigos(navController: NavController, idUsuario: Int = 0){
                     amigos = amigos,
                     onRemoverAmigo = { amigoId ->
                         CoroutineScope(Dispatchers.IO).launch {
-                            removerAmigoUsuario(usuarioDAO,idUsuario, amigoId)
-                            amigos = buscarAmigosDoUsuario(usuarioDAO,idUsuario)
+                            removerAmigoUsuario(usuarioDAO, idUsuario, amigoId)
+                            amigos = buscarAmigosDoUsuario(usuarioDAO, idUsuario)
                         }
                     },
                     onMensagemClick = { amigo ->

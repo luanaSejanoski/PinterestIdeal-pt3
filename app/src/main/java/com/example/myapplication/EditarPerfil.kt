@@ -50,6 +50,8 @@ import coil.compose.rememberAsyncImagePainter
 
 import com.example.myapplication.data.local.AppDatabase
 import com.example.myapplication.data.local.Usuario
+import com.example.myapplication.data.repository.atualizarDadosUsuario
+import com.example.myapplication.data.repository.buscarUsuarioPorId
 import kotlinx.coroutines.launch
 
 
@@ -174,7 +176,7 @@ fun TelaEditarPerfil(navController: NavController, idUsuario: Int = 0) {
     var fotoPerfil by remember { mutableStateOf<String?>(null) }
 
     LaunchedEffect(idUsuario) {
-        val usuarioBanco = buscarUsuarioPorId(usuarioDAO,idUsuario)
+        val usuarioBanco = buscarUsuarioPorId(usuarioDAO, idUsuario)
         if (usuarioBanco != null) {
             usuario = usuarioBanco
             nomeExibicao = usuarioBanco.nomeExibicao

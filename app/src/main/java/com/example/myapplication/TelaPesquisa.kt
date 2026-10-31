@@ -51,6 +51,10 @@ import androidx.navigation.NavController
 import androidx.compose.runtime.rememberCoroutineScope
 import com.example.myapplication.data.local.AppDatabase
 import com.example.myapplication.data.local.Usuario
+import com.example.myapplication.data.repository.adicionarAmigoBanco
+import com.example.myapplication.data.repository.buscarAmigosDoUsuario
+import com.example.myapplication.data.repository.buscarUsuarioPorId
+import com.example.myapplication.data.repository.listarUsuarios
 import kotlinx.coroutines.launch
 
 @Composable

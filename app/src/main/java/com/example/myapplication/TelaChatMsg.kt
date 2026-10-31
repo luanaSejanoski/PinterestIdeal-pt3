@@ -48,6 +48,8 @@ import androidx.navigation.NavController
 import com.example.myapplication.data.local.AppDatabase
 import com.example.myapplication.data.local.Mensagem
 import com.example.myapplication.data.local.Usuario
+import com.example.myapplication.data.repository.buscarConversa
+import com.example.myapplication.data.repository.buscarUsuarioPorId
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -72,7 +74,7 @@ fun TelaMsg(navController: NavController,
                 buscarConversa(mensagemDAO, idUsuario, idAmigo)
             }
             amigo = withContext(Dispatchers.IO){
-                buscarUsuarioPorId(usuarioDAO,idAmigo)
+                buscarUsuarioPorId(usuarioDAO, idAmigo)
             }
     }
 
@@ -92,7 +94,7 @@ fun TelaMsg(navController: NavController,
                         destinatarioId = idAmigo
                     )
                 )
-                mensagens =  buscarConversa(mensagemDAO, idUsuario, idAmigo)
+                mensagens = buscarConversa(mensagemDAO, idUsuario, idAmigo)
             }
         }
     }

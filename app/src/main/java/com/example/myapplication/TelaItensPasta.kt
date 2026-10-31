@@ -60,6 +60,15 @@ import com.example.myapplication.data.local.AppDatabase
 import com.example.myapplication.data.local.PastaDAO
 import com.example.myapplication.data.local.Pin
 import com.example.myapplication.data.local.PinDAO
+import com.example.myapplication.data.repository.adicionarPin
+import com.example.myapplication.data.repository.adicionarPinNaPasta
+import com.example.myapplication.data.repository.alterarTituloPin
+import com.example.myapplication.data.repository.atualizarPasta
+import com.example.myapplication.data.repository.buscarPastaId
+import com.example.myapplication.data.repository.buscarPinsPasta
+import com.example.myapplication.data.repository.contarPinsPasta
+import com.example.myapplication.data.repository.excluirPasta
+import com.example.myapplication.data.repository.excluirPinDaPasta
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -453,7 +462,7 @@ fun TelaItensPasta(navController: NavController,idPasta: Int = 0) {
                                                         mostrarDialogoExcluir = false
 
                                                         CoroutineScope(Dispatchers.IO).launch {
-                                                            excluirPasta(pastaAtual, pastaDAO )
+                                                            excluirPasta(pastaAtual, pastaDAO)
                                                         }
 
                                                         Toast.makeText(
@@ -511,7 +520,12 @@ fun TelaItensPasta(navController: NavController,idPasta: Int = 0) {
                                             onClick = {imagemAmpliada = item},
                                             onLongClick = {
                                                 CoroutineScope(Dispatchers.IO).launch {
-                                                    excluirPinDaPasta(item.id, idPasta, pastaDAO, pinDAO)
+                                                    excluirPinDaPasta(
+                                                        item.id,
+                                                        idPasta,
+                                                        pastaDAO,
+                                                        pinDAO
+                                                    )
                                                     atualizarPins(idPasta)
                                                 }
                                                 Toast.makeText(
@@ -533,7 +547,12 @@ fun TelaItensPasta(navController: NavController,idPasta: Int = 0) {
                                             onClick = {imagemAmpliada = item},
                                             onLongClick = {
                                                 CoroutineScope(Dispatchers.IO).launch {
-                                                    excluirPinDaPasta(item.id, idPasta, pastaDAO, pinDAO)
+                                                    excluirPinDaPasta(
+                                                        item.id,
+                                                        idPasta,
+                                                        pastaDAO,
+                                                        pinDAO
+                                                    )
                                                     atualizarPins(idPasta)
                                                 }
                                                 Toast.makeText(

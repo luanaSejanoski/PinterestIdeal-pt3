@@ -46,6 +46,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.myapplication.data.Dados
 import com.example.myapplication.data.local.AppDatabase
+import com.example.myapplication.data.repository.criarPasta
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -219,7 +220,12 @@ fun TelaCriarPasta(navController: NavController, idUsuario: Int = 0){
                     modifier = Modifier.align(Alignment.BottomCenter),
                     onClick = {
                        CoroutineScope(Dispatchers.IO).launch {
-                           criarPasta(privado = privado ,nome = nomePasta, usuarioId = usuario.id, pastaDAO = pastaDAO)
+                           criarPasta(
+                               privado = privado,
+                               nome = nomePasta,
+                               usuarioId = usuario.id,
+                               pastaDAO = pastaDAO
+                           )
                        }
                         pastaCriada = true
                     },
