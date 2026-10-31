@@ -32,8 +32,7 @@ class PastaRepository(
         pastaDAO.excluir(pasta)
     }
 
-    suspend fun atualizarPasta( pasta: Pasta) =
-        pastaDAO.atualizar(pasta)
+    suspend fun atualizarPasta( pasta: Pasta) = pastaDAO.atualizar(pasta)
 
     suspend fun adicionarPinNaPasta(pinId: Int, pastaId: Int) =
         pastaDAO.vincular(PastaPin(pastaId, pinId))
