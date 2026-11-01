@@ -1,8 +1,6 @@
 
 package com.example.myapplication
 
-
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.getValue
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
@@ -37,51 +35,38 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.platform.LocalContext
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import androidx.compose.runtime.rememberCoroutineScope
 import com.example.myapplication.data.local.AppDatabase
 import com.example.myapplication.data.local.Usuario
-import com.example.myapplication.data.repository.adicionarAmigoBanco
-import com.example.myapplication.data.repository.buscarAmigosDoUsuario
-import com.example.myapplication.data.repository.buscarUsuarioPorId
-import com.example.myapplication.data.repository.listarUsuarios
-import kotlinx.coroutines.launch
+import com.example.myapplication.data.repository.UsuarioRepository
+import com.example.myapplication.ui.pesquisa.PesquisaViewModel
+import com.example.myapplication.ui.pesquisa.PesquisaViewModelFactory
 
 @Composable
-fun TelaPesquisa(navController: NavController, idUsuario: Int = 0) {
-    val context = LocalContext.current
+fun TelaPesquisa(
+    navController: NavController,
+    idUsuario: Int,
+    viewModel: PesquisaViewModel = viewModel(
+        factory = PesquisaViewModelFactory(
+            UsuarioRepository(
+                AppDatabase.getDatabase(LocalContext.current).usuarioDAO()
+            ),
+            idUsuario
+        )
+    )
+) {
 
-    val db = remember { AppDatabase.getDatabase(context) }
-    val usuarioDAO = remember { db.usuarioDAO() }
-
-    val coroutineScope = rememberCoroutineScope()
-
-//    val usuario = Dados.usuarios.find{it.id == idUsuario}?: return;
-
-    var usuario by remember { mutableStateOf<Usuario?>(null) }
-    var idsAmigos by remember { mutableStateOf<List<Int>>(emptyList()) }
-    var listaUsuarios by remember { mutableStateOf<List<Usuario>>(emptyList()) }
-
-    LaunchedEffect(Unit) {
-        val listaAmigosBanco = buscarAmigosDoUsuario(usuarioDAO, idUsuario)
-        idsAmigos = listaAmigosBanco.map { amigo -> amigo.id }
-
-        listaUsuarios = listarUsuarios(usuarioDAO)
-        usuario = buscarUsuarioPorId(usuarioDAO, idUsuario)
-    }
-
-
-    val usuarioAtual = usuario
+    val uiState by viewModel.uiState.collectAsState()
+    val usuarioAtual = uiState.usuario
 
     Surface(
         modifier = Modifier.fillMaxSize(),
@@ -100,18 +85,17 @@ fun TelaPesquisa(navController: NavController, idUsuario: Int = 0) {
 
                 Spacer(modifier = Modifier.height(40.dp))
 
-                if(usuarioAtual != null) {
+                if (usuarioAtual != null) {
                     BarraPesquisa(
-                        usuarios = listaUsuarios,
+                        usuarios = uiState.listaUsuarios,
                         usuarioLogado = usuarioAtual,
-                        idsAmigos = idsAmigos,
+                        idsAmigos = uiState.idsAmigos,
+                        pesquisarP = uiState.pesquisarP,
+                        onPesquisaChange = { texto ->
+                            viewModel.atualizarPesquisa(texto)
+                        },
                         onAdicionarAmigo = { amigo ->
-                            coroutineScope.launch {
-                                if (amigo.id != idUsuario && amigo.id !in idsAmigos) {
-                                    adicionarAmigoBanco(usuarioDAO, idUsuario, amigo.id)
-                                    idsAmigos = idsAmigos + amigo.id
-                                }
-                            }
+                            viewModel.adicionarAmigo(amigo)
                         },
                         navController = navController
                     )
@@ -152,16 +136,16 @@ fun BarraPesquisa(
     idsAmigos: List<Int>,
     onAdicionarAmigo: (Usuario) -> Unit,
     usuarioLogado: Usuario,
+    pesquisarP: String,
+    onPesquisaChange: (String) -> Unit,
     navController: NavController
 ) {
-    var pesquisarP by remember { mutableStateOf("") }
-
     val usuariosFiltrados = usuarios.filter {
-        it.id != 0 && (
-                it.nomeExibicao.contains(pesquisarP, ignoreCase = true) ||
-                it.nomeUsuario.contains(pesquisarP, ignoreCase = true)
-            )
-
+        it.id != usuarioLogado.id &&
+                (
+                        it.nomeExibicao.contains(pesquisarP, ignoreCase = true) ||
+                                it.nomeUsuario.contains(pesquisarP, ignoreCase = true)
+                        )
     }
 
     Column {
@@ -193,7 +177,7 @@ fun BarraPesquisa(
 
                 TextField(
                     value = pesquisarP,
-                    onValueChange = { pesquisarP = it },
+                    onValueChange = onPesquisaChange,
                     singleLine = true,
                     modifier = Modifier.weight(1f),
                     textStyle = LocalTextStyle.current.copy(
@@ -260,11 +244,6 @@ fun Usuarios(usuario: Usuario,
         horizontalArrangement = Arrangement.SpaceBetween
     )
     {
-
-        var adicionado by remember(isAmigo) {
-            mutableStateOf(isAmigo)
-        }
-
         Row(
             modifier = Modifier.weight(1f),
             verticalAlignment = Alignment.CenterVertically
@@ -298,18 +277,11 @@ fun Usuarios(usuario: Usuario,
             criaBotao(
                 x = 0.25f,
                 texto = "Adicionar",
-                adicionado = adicionado,
+                adicionado = isAmigo,
                 onClick = {
-                    if (usuario.id != usuarioLogado.id) {
                         onAdicionarAmigo(usuario)
-                        adicionado = true
-                    }
                 }
             )
         }
     }
 }
-
-
-
-

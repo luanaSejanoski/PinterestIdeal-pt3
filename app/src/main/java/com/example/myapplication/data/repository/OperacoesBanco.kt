@@ -144,7 +144,7 @@ suspend fun atualizarDadosUsuario(
     }
 }
 
- fun listarUsuarios(usuarioDAO: UsuarioDAO): Flow<List<Usuario>> {
+ fun listarUsuarios(usuarioDAO: UsuarioRepository): Flow<List<Usuario>> {
     return try {
         usuarioDAO.listarTodosUsuarios().
     } catch (e: Exception) {
@@ -153,7 +153,7 @@ suspend fun atualizarDadosUsuario(
     }
 }
 
-suspend fun buscarAmigosDoUsuario(usuarioDAO: UsuarioDAO, idUsuario: Int): List<Usuario> {
+suspend fun buscarAmigosDoUsuario(usuarioDAO: UsuarioRepository, idUsuario: Int): List<Usuario> {
     return try {
         usuarioDAO.buscarAmigos(idUsuario)
     } catch (e: Exception) {
@@ -161,7 +161,7 @@ suspend fun buscarAmigosDoUsuario(usuarioDAO: UsuarioDAO, idUsuario: Int): List<
         emptyList()
     }
 }
-suspend fun adicionarAmigoBanco(usuarioDAO: UsuarioDAO, usuarioId: Int, amigoId: Int) {
+suspend fun adicionarAmigoBanco(usuarioDAO: UsuarioRepository, usuarioId: Int, amigoId: Int) {
     try {
         val relacao = UsuarioAmigo(usuarioId = usuarioId, amigoId = amigoId)
         usuarioDAO.adicionarAmigo(relacao)

@@ -20,10 +20,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
@@ -42,64 +38,43 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.myapplication.data.local.AppDatabase
-import com.example.myapplication.data.local.Mensagem
-import com.example.myapplication.data.local.Usuario
-import com.example.myapplication.data.repository.buscarConversa
-import com.example.myapplication.data.repository.buscarUsuarioPorId
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import com.example.myapplication.data.repository.MensagemRepository
+import com.example.myapplication.ui.mensagem.MensagemViewModel
+import com.example.myapplication.ui.mensagem.MensagemViewModelFactory
+
 
 @Composable
 fun TelaMsg(navController: NavController,
+            idUsuario: Int,
             idAmigo: Int,
-            idUsuario: Int) {
+            viewModel: MensagemViewModel = viewModel(
+                factory = MensagemViewModelFactory(
+                    MensagemRepository(
+                        AppDatabase.getDatabase(LocalContext.current).mensagemDAO(),
+                        AppDatabase.getDatabase(LocalContext.current).usuarioDAO()
+                    ),
+                    idUsuario,
+                    idAmigo
+                )
+            )
+) {
 
-    val context = LocalContext.current
-    val db = AppDatabase.getDatabase(context)
-    val mensagemDAO = db.mensagemDAO()
-    val usuarioDAO = db.usuarioDAO()
+    val uiState by viewModel.uiState.collectAsState()
 
-    var mensagens by remember { mutableStateOf<List<Mensagem>>(emptyList()) }
-    var mensagem by remember { mutableStateOf("") }
-    var amigo by remember { mutableStateOf<Usuario?>(null) }
-
-    LaunchedEffect(idUsuario, idAmigo) {
-            mensagens = withContext(Dispatchers.IO){
-                buscarConversa(mensagemDAO, idUsuario, idAmigo)
-            }
-            amigo = withContext(Dispatchers.IO){
-                buscarUsuarioPorId(usuarioDAO, idAmigo)
-            }
-    }
-
+    val mensagens = uiState.mensagens
+    val mensagem = uiState.mensagem
+    val amigo = uiState.amigo
 
     val listaState = rememberLazyListState()
 
-    // Enviar mensagem
-    fun enviarMensagem() {
-        if (mensagem.isNotBlank()) {
-            val texto = mensagem.trim()
-            mensagem = ""
-            CoroutineScope(Dispatchers.IO).launch {
-                mensagemDAO.inserir(
-                    Mensagem(
-                        texto = texto,
-                        remetenteId = idUsuario,
-                        destinatarioId = idAmigo
-                    )
-                )
-                mensagens = buscarConversa(mensagemDAO, idUsuario, idAmigo)
-            }
-        }
-    }
-
-    // vai para a mensagem mais recente
+    // Vai para a mensagem mais recente
     LaunchedEffect(mensagens.size) {
         if (mensagens.isNotEmpty()) {
             listaState.animateScrollToItem(0)
@@ -185,15 +160,15 @@ fun TelaMsg(navController: NavController,
             ) {
                 CampoMsg(
                     mensagem = mensagem,
-                    onMensagemChange = { mensagem = it },
-                    onEnviar = { enviarMensagem() },
+                    onMensagemChange = { viewModel.atualizarMensagem(it) },
+                    onEnviar = { viewModel.enviarMensagem(mensagem) },
                     modifier = Modifier.weight(1f)
                 )
 
                 Spacer(modifier = Modifier.width(8.dp))
 
                 IconButton(
-                    onClick = { enviarMensagem() }
+                    onClick = { viewModel.enviarMensagem(mensagem) }
                 ) {
                     Icon(
                         imageVector = Icons.Default.Send,

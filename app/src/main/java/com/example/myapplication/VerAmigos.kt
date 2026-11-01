@@ -33,11 +33,8 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -46,29 +43,31 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.myapplication.data.local.AppDatabase
 import com.example.myapplication.data.local.Usuario
-import com.example.myapplication.data.repository.buscarAmigosDoUsuario
-import com.example.myapplication.data.repository.removerAmigoUsuario
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
+import com.example.myapplication.data.repository.UsuarioRepository
+import com.example.myapplication.ui.amigos.AmigosViewModel
+import com.example.myapplication.ui.amigos.AmigosViewModelFactory
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TelaVerAmigos(navController: NavController, idUsuario: Int = 0){
+fun TelaVerAmigos(
+    navController: NavController,
+    idUsuario: Int = 0,
+    viewModel: AmigosViewModel = viewModel(
+        factory = AmigosViewModelFactory(
+            UsuarioRepository(
+                AppDatabase.getDatabase(LocalContext.current).usuarioDAO()
+            ),
+            idUsuario
+        )
+    )
+){
 
-    val context = LocalContext.current
-    val db = AppDatabase.getDatabase(context)
-    val usuarioDAO = db.usuarioDAO()
-
-    var amigos by remember { mutableStateOf<List<Usuario>>(emptyList()) }
-
-    LaunchedEffect(idUsuario) {
-            amigos = buscarAmigosDoUsuario(usuarioDAO, idUsuario)
-    }
+    val uiState by viewModel.uiState.collectAsState()
 
     Surface(
         modifier = Modifier.fillMaxSize(),
@@ -97,16 +96,11 @@ fun TelaVerAmigos(navController: NavController, idUsuario: Int = 0){
                 Spacer(modifier = Modifier.height(10.dp))
 
                 BarraPesquisaAmigos(
-                    amigos = amigos,
-                    onRemoverAmigo = { amigoId ->
-                        CoroutineScope(Dispatchers.IO).launch {
-                            removerAmigoUsuario(usuarioDAO, idUsuario, amigoId)
-                            amigos = buscarAmigosDoUsuario(usuarioDAO, idUsuario)
-                        }
-                    },
-                    onMensagemClick = { amigo ->
-                        navController.navigate("chat/${amigo.id}")
-                    },
+                    amigos = uiState.amigos,
+                    pesquisarP = uiState.pesquisarP,
+                    onPesquisaChange = { viewModel.atualizarPesquisa(it) },
+                    onRemoverAmigo = { amigoId -> viewModel.removerAmigo(amigoId) },
+                    onMensagemClick = { amigo -> navController.navigate("chat/${amigo.id}") },
                     navController = navController
                 )
             }
@@ -114,15 +108,17 @@ fun TelaVerAmigos(navController: NavController, idUsuario: Int = 0){
     }
 }
 
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BarraPesquisaAmigos(
     amigos: List<Usuario>,
+    pesquisarP: String,
+    onPesquisaChange: (String) -> Unit,
     onRemoverAmigo: (Int) -> Unit,
     onMensagemClick: (Usuario) -> Unit,
     navController: NavController
 ) {
-    var pesquisarP by remember { mutableStateOf("") }
 
     val amigosFiltrados = amigos.filter {
         it.nomeExibicao.contains(pesquisarP, ignoreCase = true) ||
@@ -157,7 +153,7 @@ fun BarraPesquisaAmigos(
 
                 TextField(
                     value = pesquisarP,
-                    onValueChange = { pesquisarP = it },
+                    onValueChange = onPesquisaChange,
                     singleLine = true,
                     modifier = Modifier.weight(1f),
                     textStyle = LocalTextStyle.current.copy(
@@ -190,7 +186,7 @@ fun BarraPesquisaAmigos(
                     imagem = R.drawable.user,
                     onMensagemClick = { onMensagemClick(amigo) },
                     onExcluirClick = { onRemoverAmigo(amigo.id) },
-                    navController
+                    navController = navController
                 )
             }
         }
@@ -271,14 +267,15 @@ fun ItemAmigo(
                 }
 
                 // icone de Excluir (Remove da lista de amigos)
-                IconButton(onClick = onExcluirClick) {
+                IconButton(
+                    onClick = onExcluirClick) {
                     Icon(
                         imageVector = Icons.Default.Delete,
                         contentDescription = "Excluir amigo",
                         tint = Color.White
                     )
                 }
+                }
             }
         }
     }
-}
