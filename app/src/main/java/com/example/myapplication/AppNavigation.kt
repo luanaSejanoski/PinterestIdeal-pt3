@@ -12,6 +12,9 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavType
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.navArgument
+import com.example.myapplication.ui.amigos.TelaVerAmigos
+import com.example.myapplication.ui.mensagem.TelaMsg
+import com.example.myapplication.ui.pesquisa.TelaPesquisa
 
 object Rotas{
      const val HOME = "home"
@@ -67,7 +70,7 @@ fun AppNavigation(navController: NavHostController) {
                     TelaItensPasta(navController, idPasta = idPasta)
                }
                composable(Rotas.PESQUISAR_PESSOAS){
-                    TelaPesquisa(navController)
+                   TelaPesquisa(navController)
                }
 
                composable(Rotas.CRIAR_PASTA){

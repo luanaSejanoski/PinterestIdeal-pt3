@@ -1,5 +1,4 @@
-
-package com.example.myapplication
+package com.example.myapplication.ui.pesquisa
 
 import androidx.compose.runtime.getValue
 import androidx.compose.foundation.BorderStroke
@@ -45,11 +44,11 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.example.myapplication.R
+import com.example.myapplication.Rotas
 import com.example.myapplication.data.local.AppDatabase
 import com.example.myapplication.data.local.Usuario
 import com.example.myapplication.data.repository.UsuarioRepository
-import com.example.myapplication.ui.pesquisa.PesquisaViewModel
-import com.example.myapplication.ui.pesquisa.PesquisaViewModelFactory
 
 @Composable
 fun TelaPesquisa(

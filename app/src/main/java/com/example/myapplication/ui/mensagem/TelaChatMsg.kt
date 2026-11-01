@@ -1,5 +1,4 @@
-
-package com.example.myapplication
+package com.example.myapplication.ui.mensagem
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -44,10 +43,9 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.example.myapplication.BotaoVoltar
 import com.example.myapplication.data.local.AppDatabase
 import com.example.myapplication.data.repository.MensagemRepository
-import com.example.myapplication.ui.mensagem.MensagemViewModel
-import com.example.myapplication.ui.mensagem.MensagemViewModelFactory
 
 
 @Composable

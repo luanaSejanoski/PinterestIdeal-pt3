@@ -1,4 +1,4 @@
-package com.example.myapplication
+package com.example.myapplication.ui.amigos
 
 
 import androidx.compose.material3.TextField
@@ -45,11 +45,11 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.example.myapplication.R
+import com.example.myapplication.Rotas
 import com.example.myapplication.data.local.AppDatabase
 import com.example.myapplication.data.local.Usuario
 import com.example.myapplication.data.repository.UsuarioRepository
-import com.example.myapplication.ui.amigos.AmigosViewModel
-import com.example.myapplication.ui.amigos.AmigosViewModelFactory
 
 
 @OptIn(ExperimentalMaterial3Api::class)
