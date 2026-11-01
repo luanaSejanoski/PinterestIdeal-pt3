@@ -1,4 +1,4 @@
-package com.example.myapplication
+package com.example.myapplication.ui.componentes
 
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
@@ -12,6 +12,15 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavType
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.navArgument
+import com.example.myapplication.TelaEditarPerfil
+import com.example.myapplication.TelaMsg
+import com.example.myapplication.TelaPerfil
+import com.example.myapplication.TelaPesquisa
+import com.example.myapplication.TelaVerAmigos
+import com.example.myapplication.TelaVerPerfilUsuario
+import com.example.myapplication.ui.pasta.TelaCriarPasta
+import com.example.myapplication.ui.pasta.TelaItensPasta
+import com.example.myapplication.ui.pasta.TelaVerPastaUsuario
 
 object Rotas{
      const val HOME = "home"
@@ -45,7 +54,7 @@ fun AppNavigation(navController: NavHostController) {
           //adiciona BottomBar apenas em algumas telas
           bottomBar = {
                if(rotaAtual in rotasComMenu)
-               MenuInferior(navController)
+                    MenuInferior(navController)
           }
      ) { paddingValues ->
 
@@ -71,7 +80,7 @@ fun AppNavigation(navController: NavHostController) {
                }
 
                composable(Rotas.CRIAR_PASTA){
-                    TelaCriarPasta(navController)
+                   TelaCriarPasta(navController)
                }
                composable(Rotas.MENSAGENS){
                     TelaVerAmigos(navController)

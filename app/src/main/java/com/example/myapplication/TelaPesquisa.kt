@@ -55,6 +55,7 @@ import com.example.myapplication.data.repository.adicionarAmigoBanco
 import com.example.myapplication.data.repository.buscarAmigosDoUsuario
 import com.example.myapplication.data.repository.buscarUsuarioPorId
 import com.example.myapplication.data.repository.listarUsuarios
+import com.example.myapplication.ui.componentes.Rotas
 import kotlinx.coroutines.launch
 
 @Composable

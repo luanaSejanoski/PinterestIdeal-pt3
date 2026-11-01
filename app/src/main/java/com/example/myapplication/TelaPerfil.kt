@@ -58,6 +58,7 @@ import com.example.myapplication.data.repository.buscarPastas
 import com.example.myapplication.data.repository.buscarUsuarioPorId
 import com.example.myapplication.data.repository.contarAmigosUsuario
 import com.example.myapplication.data.repository.contarPinsPasta
+import com.example.myapplication.ui.componentes.Rotas
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 

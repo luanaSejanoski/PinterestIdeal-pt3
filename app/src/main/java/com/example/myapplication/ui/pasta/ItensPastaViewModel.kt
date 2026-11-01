@@ -1,25 +1,15 @@
 package com.example.myapplication.ui.pasta
 
-import androidx.compose.runtime.LaunchedEffect
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.myapplication.data.local.Pin
 import com.example.myapplication.data.repository.PastaRepository
 import com.example.myapplication.data.repository.PinRepository
-import com.example.myapplication.data.repository.buscarPastaId
-import com.example.myapplication.data.repository.buscarPinsPasta
-import com.example.myapplication.data.repository.contarPinsPasta
-import com.example.myapplication.data.repository.excluirPasta
-import com.example.myapplication.data.repository.excluirPinDaPasta
-import com.example.myapplication.salvarNomePasta
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 class ItensPastaViewModel(
         private val repository: PastaRepository,

@@ -52,6 +52,8 @@ import com.example.myapplication.data.local.AppDatabase
 import com.example.myapplication.data.local.Usuario
 import com.example.myapplication.data.repository.atualizarDadosUsuario
 import com.example.myapplication.data.repository.buscarUsuarioPorId
+import com.example.myapplication.ui.componentes.BotaoVoltar
+import com.example.myapplication.ui.componentes.Rotas
 import kotlinx.coroutines.launch
 
 
@@ -220,7 +222,7 @@ fun TelaEditarPerfil(navController: NavController, idUsuario: Int = 0) {
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    BotaoVoltar(navController=navController)
+                    BotaoVoltar(navController = navController)
                     Text(text = "Editar perfil", color = Color.White, textAlign = TextAlign.Center)
 
 

@@ -1,4 +1,4 @@
-package com.example.myapplication
+package com.example.myapplication.ui.pasta
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.BorderStroke
@@ -20,7 +20,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -34,9 +33,6 @@ import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.onFocusChanged
@@ -45,19 +41,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
-import com.example.myapplication.data.Dados
+import com.example.myapplication.ui.componentes.BotaoVoltar
+import com.example.myapplication.ui.componentes.Rotas
 import com.example.myapplication.data.local.AppDatabase
 import com.example.myapplication.data.repository.PastaRepository
-import com.example.myapplication.data.repository.PinRepository
-import com.example.myapplication.data.repository.criarPasta
-import com.example.myapplication.ui.pasta.CriarPastaViewModel
-import com.example.myapplication.ui.pasta.CriarPastaViewModelFactory
-import com.example.myapplication.ui.pasta.ItensPastaViewModel
-import com.example.myapplication.ui.pasta.ItensPastaViewModelFactory
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -106,8 +93,9 @@ fun TelaCriarPasta(navController: NavController,
                     .padding(horizontal = 5.dp, vertical = 20.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                BotaoVoltar(navController = navController,
-                    onClick = {navController.navigate(Rotas.HOME)})
+                BotaoVoltar(
+                    navController = navController,
+                    onClick = { navController.navigate(Rotas.HOME) })
 
                 Text(
                     text = "Criar uma Pasta",

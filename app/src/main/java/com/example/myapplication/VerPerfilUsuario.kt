@@ -38,10 +38,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import coil.compose.rememberAsyncImagePainter
-import com.example.myapplication.data.Dados
+import com.example.myapplication.data.local.Dados
 import com.example.myapplication.data.local.Pasta
 import com.example.myapplication.data.local.AppDatabase
 import com.example.myapplication.data.repository.buscarPastas
+import com.example.myapplication.ui.componentes.BotaoVoltar
+import com.example.myapplication.ui.componentes.Rotas
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 

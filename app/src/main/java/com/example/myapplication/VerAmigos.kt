@@ -51,6 +51,7 @@ import com.example.myapplication.data.local.AppDatabase
 import com.example.myapplication.data.local.Usuario
 import com.example.myapplication.data.repository.buscarAmigosDoUsuario
 import com.example.myapplication.data.repository.removerAmigoUsuario
+import com.example.myapplication.ui.componentes.Rotas
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
