@@ -1,4 +1,4 @@
-package com.example.myapplication
+package com.example.myapplication.ui.pasta
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -21,11 +21,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -36,54 +32,62 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.core.net.toUri
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
-import com.example.myapplication.data.local.Pasta
+import com.example.myapplication.ui.componentes.BotaoVoltar
 import com.example.myapplication.data.local.AppDatabase
 import com.example.myapplication.data.local.Pin
-import com.example.myapplication.data.repository.buscarPastaId
-import com.example.myapplication.data.repository.buscarPinsPasta
-import com.example.myapplication.data.repository.contarPinsPasta
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
+import com.example.myapplication.data.repository.PastaRepository
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 
 @Composable
-fun TelaVerPastaUsuario(navController: NavController, idPasta: Int) {
+fun TelaVerPastaUsuario(navController: NavController,
+                        idPasta: Int,
+                        viewModel: VerPastaUsuarioViewModel = viewModel(
+                            key = "pasta_$idPasta",
+                            factory = VerPastaUsuarioViewModelFactory (
+                                PastaRepository(AppDatabase.getDatabase(LocalContext.current).pastaDAO()),
+                                idPasta
+                            )
+                        )
+) {
 
-    val context = LocalContext.current
-    val db = AppDatabase.getDatabase(context)
-    val pastaDAO = db.pastaDAO()
-    var pasta by remember {mutableStateOf<Pasta?>(null)}
+//    val context = LocalContext.current
+//    val db = AppDatabase.getDatabase(context)
+//    val pastaDAO = db.pastaDAO()
+//    var pasta by remember {mutableStateOf<Pasta?>(null)}
+//
+//    var totalPinsPasta by remember { mutableStateOf(0) }
+//    var pins by remember { mutableStateOf<List<Pin>>(emptyList()) }
 
-    var totalPinsPasta by remember { mutableStateOf(0) }
-    var pins by remember { mutableStateOf<List<Pin>>(emptyList()) }
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+//
+//
+//    LaunchedEffect(idPasta) {
+//            val pastaEncontrada = withContext(Dispatchers.IO){
+//                buscarPastaId(pastaDAO, idPasta)
+//            }
+//
+//            val total = withContext(Dispatchers.IO){
+//                contarPinsPasta(pastaDAO, idPasta)
+//            }
+//
+//            val lista = withContext(Dispatchers.IO){
+//                buscarPinsPasta(pastaDAO, idPasta)
+//            }
+//
+//            pasta = pastaEncontrada
+//            totalPinsPasta = total
+//            pins = lista
+//        }
 
 
-
-    LaunchedEffect(idPasta) {
-            val pastaEncontrada = withContext(Dispatchers.IO){
-                buscarPastaId(pastaDAO, idPasta)
-            }
-
-            val total = withContext(Dispatchers.IO){
-                contarPinsPasta(pastaDAO, idPasta)
-            }
-
-            val lista = withContext(Dispatchers.IO){
-                buscarPinsPasta(pastaDAO, idPasta)
-            }
-
-            pasta = pastaEncontrada
-            totalPinsPasta = total
-            pins = lista
-        }
-
-
-    val pastaAtual = pasta
-    if (pastaAtual == null) {
+//    val pastaAtual = uiState.pasta
+    if (uiState.pasta == null) {
         Surface(modifier = Modifier.fillMaxSize(), color = Color.Transparent) {}
         return
     }
@@ -98,14 +102,15 @@ fun TelaVerPastaUsuario(navController: NavController, idPasta: Int) {
                 navigationIcon = {
                     BotaoVoltar(
                         modifier = Modifier.padding(top = 25.dp, start = 6.dp),
-                        navController = navController)
+                        navController = navController
+                    )
                 }
             )
         }
     ) { paddingValues ->
 
-        var nomePasta by remember { mutableStateOf(pastaAtual.nome) }
-        var imagemAmpliada by remember {mutableStateOf<Pin?>(null)}
+//        var nomePasta by remember { mutableStateOf(pastaAtual.nome) }
+//        var imagemAmpliada by remember {mutableStateOf<Pin?>(null)}
 
 
         Surface(
@@ -133,14 +138,14 @@ fun TelaVerPastaUsuario(navController: NavController, idPasta: Int) {
                             Column() {
                                 Row() {
                                     Text(
-                                        text = "$nomePasta",
+                                        text = "$uiState.nomePasta",
                                         color = Color.White,
                                         fontSize = 20.sp
                                     )
                                 }
                                 Row() {
                                     Text(
-                                        text = "$totalPinsPasta Pins",
+                                        text = "${uiState.totalPinsPasta} Pins",
                                         color = Color.White
                                     )
                                 }
@@ -154,7 +159,7 @@ fun TelaVerPastaUsuario(navController: NavController, idPasta: Int) {
                     val colunaEsquerda = mutableListOf<Pin>()
                     val colunaDireita = mutableListOf<Pin>()
 
-                    organizaImagensColuna(pins, colunaEsquerda, colunaDireita)
+                    uiState.organizaImagensColuna(uiState.pins, colunaEsquerda, colunaDireita)
 
 
                     //área das imagens
@@ -175,9 +180,10 @@ fun TelaVerPastaUsuario(navController: NavController, idPasta: Int) {
                                 // Define a proporção da imagem para que ela mantenha suas medidas originais na tela
                                 val proporcao = item.largura.toFloat() / item.altura.toFloat()
 
-                                gerarBlocoImagem(item, proporcao,
-                                    onClick = {imagemAmpliada = item},
-                                    )
+                                gerarBlocoImagem(
+                                    item, proporcao,
+                                    onClick = { viewModel.aoClicarAmpliarImagem(item) },
+                                )
                             }
                         }
                         Column(
@@ -187,8 +193,9 @@ fun TelaVerPastaUsuario(navController: NavController, idPasta: Int) {
                             colunaDireita.forEach { item ->
                                 val proporcao =
                                     item.largura.toFloat() / item.altura.toFloat()
-                                gerarBlocoImagem(item, proporcao,
-                                    onClick = {imagemAmpliada = item},
+                                gerarBlocoImagem(
+                                    item, proporcao,
+                                    onClick = { viewModel.aoClicarAmpliarImagem(item) },
                                 )
                             }
                         }
@@ -198,9 +205,9 @@ fun TelaVerPastaUsuario(navController: NavController, idPasta: Int) {
         }
 
         //amplia a imagem quando clicada
-        imagemAmpliada?.let{pin ->
+        uiState.imagemAmpliada?.let{pin ->
             Dialog(
-                onDismissRequest = { imagemAmpliada = null}
+                onDismissRequest = { viewModel.fecharImagemAmpliada()}
 
             ) {
                 Column(
@@ -215,9 +222,7 @@ fun TelaVerPastaUsuario(navController: NavController, idPasta: Int) {
                         modifier = Modifier
                             .fillMaxWidth()
                             .heightIn(max = 450.dp)
-                            .clickable {
-                                imagemAmpliada = null
-                            },
+                            .clickable { viewModel.fecharImagemAmpliada() },
                         contentScale = ContentScale.Fit
                     )
 

@@ -1,6 +1,7 @@
-package com.example.myapplication
+package com.example.myapplication.ui.pasta
 
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.graphics.drawable.Drawable
 import androidx.compose.ui.window.Dialog
 import android.widget.Toast
@@ -32,9 +33,6 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -43,36 +41,32 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.runtime.LaunchedEffect
 import androidx.core.net.toUri
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import coil.compose.rememberAsyncImagePainter
+import com.example.myapplication.ui.componentes.BotaoVoltar
+import com.example.myapplication.R
 import com.example.myapplication.data.local.Pasta
 import com.example.myapplication.data.local.AppDatabase
 import com.example.myapplication.data.local.PastaDAO
 import com.example.myapplication.data.local.Pin
 import com.example.myapplication.data.local.PinDAO
-import com.example.myapplication.data.repository.adicionarPin
-import com.example.myapplication.data.repository.adicionarPinNaPasta
+import com.example.myapplication.data.repository.PastaRepository
+import com.example.myapplication.data.repository.PinRepository
 import com.example.myapplication.data.repository.alterarTituloPin
 import com.example.myapplication.data.repository.atualizarPasta
-import com.example.myapplication.data.repository.buscarPastaId
-import com.example.myapplication.data.repository.buscarPinsPasta
-import com.example.myapplication.data.repository.contarPinsPasta
-import com.example.myapplication.data.repository.excluirPasta
-import com.example.myapplication.data.repository.excluirPinDaPasta
+import com.example.myapplication.gerarBloco
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 @Composable
 fun gerarBlocoIcone(cor: Color? = null,
@@ -124,28 +118,7 @@ fun gerarBlocoImagem(
     }
 }
 
-fun organizaImagensColuna(
-    listaPins: List<Pin>,
-    colunaEsquerda: MutableList<Pin>,
-    colunaDireita: MutableList<Pin>
-){
-    var alturaEsquerda = 0f
-    var alturaDireita = 0f
 
-
-    listaPins.forEach { imagem ->
-        // Decide em qual coluna colocar (menor)
-        val alturaRelativa= imagem.altura.toFloat() / imagem.largura.toFloat() //quao alta a imagem é
-
-        if(alturaEsquerda <= alturaDireita){
-            colunaEsquerda.add(imagem)
-            alturaEsquerda += alturaRelativa
-        }else{
-            colunaDireita.add(imagem)
-            alturaDireita += alturaRelativa
-        }
-    }
-}
 
 fun salvarNomePasta(
     pasta: Pasta,
@@ -180,63 +153,45 @@ fun salvarTituloPin(
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun PreviewTelaItensPasta() {
-    val navController = rememberNavController()
-
-    TelaItensPasta(
-        navController = navController,
-
-        )
-}
 
 
 @SuppressLint("UnrememberedMutableState", "SuspiciousIndentation")
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
-fun TelaItensPasta(navController: NavController,idPasta: Int = 0) {
-
+fun TelaItensPasta(navController: NavController,
+                   idPasta: Int,
+                   viewModel: ItensPastaViewModel = viewModel(
+                       key = "pasta_$idPasta",
+                       factory = ItensPastaViewModelFactory (
+                           PastaRepository(
+                               AppDatabase.getDatabase(LocalContext.current).pastaDAO()
+                           ),
+                           PinRepository(
+                               pinDAO = AppDatabase.getDatabase(LocalContext.current).pinDAO(),
+                               pastaDAO = AppDatabase.getDatabase(LocalContext.current).pastaDAO()
+                           ),
+                           idPasta
+                           )
+                   )
+){
+//
     val context = LocalContext.current
-    val db = AppDatabase.getDatabase(context)
-    val pastaDAO = db.pastaDAO()
-    val pinDAO = db.pinDAO()
-    var pasta by remember {mutableStateOf<Pasta?>(null)}
+//    val db = AppDatabase.getDatabase(context)
+//    val pastaDAO = db.pastaDAO()
+//    val pinDAO = db.pinDAO()
+//    var pasta by remember {mutableStateOf<Pasta?>(null)}
 
 
-    var totalPinsPasta by remember { mutableStateOf(0) }
-    var pins by remember { mutableStateOf<List<Pin>>(emptyList()) }
+//    var totalPinsPasta by remember { mutableStateOf(0) }
+//    var pins by remember { mutableStateOf<List<Pin>>(emptyList()) }
 
-    suspend fun atualizarPins(idPasta: Int) {
-        val total = contarPinsPasta(pastaDAO, idPasta)
-        val lista = buscarPinsPasta(pastaDAO, idPasta)
-
-        withContext(Dispatchers.Main) {
-            totalPinsPasta = total
-            pins = lista
-        }
-    }
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
 
-    LaunchedEffect(idPasta) {
-            val pastaEncontrada = withContext(Dispatchers.IO){
-                buscarPastaId(pastaDAO, idPasta)
-            }
-            val total = withContext(Dispatchers.IO){
-                contarPinsPasta(pastaDAO, idPasta)
-            }
-            val lista = withContext(Dispatchers.IO){
-                buscarPinsPasta(pastaDAO, idPasta)
-            }
 
-            pasta = pastaEncontrada
-            totalPinsPasta = total
-            pins = lista
-
-    }
-
-    val pastaAtual = pasta
-    if (pastaAtual == null) {
+//
+//    val pastaAtual = uiState.pasta
+    if (uiState.pasta == null) {
         Surface(modifier = Modifier.fillMaxSize(), color = Color.Transparent) {}
         return
     }
@@ -252,35 +207,34 @@ fun TelaItensPasta(navController: NavController,idPasta: Int = 0) {
                 navigationIcon = {
                     BotaoVoltar(
                         modifier = Modifier.padding(top = 25.dp, start = 6.dp),
-                        navController = navController)
+                        navController = navController
+                    )
                 }
             )
         }
     ) { paddingValues ->
 
-        var nomePasta by remember { mutableStateOf(pastaAtual.nome) }
-        var privacidadePasta by remember { mutableStateOf(pastaAtual.privado) }
-
-        var mostrarDialogoMudarNome by remember { mutableStateOf(false) }
-        var mostrarDialogoExcluir by remember { mutableStateOf(false) }
-        var novoNome by remember { mutableStateOf("") }
-
-
-        var imagemAmpliada by remember {mutableStateOf<Pin?>(null)}
-        var editandoPin by remember { mutableStateOf(false)}
-        var novoTitulo by remember { mutableStateOf("") }
+//        var nomePasta by remember { mutableStateOf(pastaAtual.nome) }
+//        var privacidadePasta by remember { mutableStateOf(pastaAtual.privado) }
+//
+//        var mostrarDialogoMudarNome by remember { mutableStateOf(false) }
+//        var mostrarDialogoExcluir by remember { mutableStateOf(false) }
+//        var novoNome by remember { mutableStateOf("") }
+//
+//
+//        var imagemAmpliada by remember {mutableStateOf<Pin?>(null)}
+//        var editandoPin by remember { mutableStateOf(false)}
+//        var novoTitulo by remember { mutableStateOf("") }
 
         val selecionarImagens = rememberLauncherForActivityResult(
             contract = ActivityResultContracts.OpenMultipleDocuments()
         ) { uris ->
-
             uris.forEach { uri ->
 
                 context.contentResolver.takePersistableUriPermission(
                     uri,
-                    android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION
+                    Intent.FLAG_GRANT_READ_URI_PERMISSION
                 )
-
 
                 val drawable = context.contentResolver
                     .openInputStream(uri)
@@ -291,12 +245,7 @@ fun TelaItensPasta(navController: NavController,idPasta: Int = 0) {
                 val largura = drawable?.intrinsicWidth ?: 0
                 val altura = drawable?.intrinsicHeight ?: 0
 
-
-                CoroutineScope(Dispatchers.IO).launch {
-                  val novoPinId = adicionarPin(uri.toString(), largura, altura, pinDAO)
-                    adicionarPinNaPasta(novoPinId, idPasta, pastaDAO)
-                    atualizarPins(idPasta)
-                }
+                viewModel.aoClicarAdicionarImagem(uri.toString(), largura, altura)
             }
         }
 
@@ -326,7 +275,7 @@ fun TelaItensPasta(navController: NavController,idPasta: Int = 0) {
                                     Column() {
                                         Row() {
                                             Text(
-                                                text = "$nomePasta",
+                                                text = uiState.nomePasta,
                                                 color = Color.White,
                                                 fontSize = 20.sp
                                             )
@@ -335,16 +284,13 @@ fun TelaItensPasta(navController: NavController,idPasta: Int = 0) {
                                                 30,
                                                 5,
                                                 icon = painterResource(R.drawable.editar),
-                                                onClick = {
-                                                    novoNome = nomePasta
-                                                    mostrarDialogoMudarNome = true
-                                                }
+                                                onClick = { viewModel.abrirDialogoMudarNome() }
                                             )
                                         }
-                                        if (mostrarDialogoMudarNome) {
+                                        if (uiState.mostrarDialogoMudarNome) {
                                             AlertDialog(
                                                 onDismissRequest = {
-                                                    mostrarDialogoMudarNome = false
+                                                    viewModel.fecharDialogoMudarNome()
                                                 },
 
                                                 title = {
@@ -353,9 +299,9 @@ fun TelaItensPasta(navController: NavController,idPasta: Int = 0) {
 
                                                 text = {
                                                     TextField(
-                                                        value = novoNome,
+                                                        value = uiState.nomePasta,
                                                         onValueChange = {
-                                                            novoNome = it
+                                                            viewModel.onNomeChange(it)
                                                         },
                                                         singleLine = true
                                                     )
@@ -364,9 +310,7 @@ fun TelaItensPasta(navController: NavController,idPasta: Int = 0) {
                                                 confirmButton = {
                                                     TextButton(
                                                         onClick = {
-                                                            nomePasta = novoNome
-                                                            mostrarDialogoMudarNome = false
-                                                            salvarNomePasta(pastaAtual, nomePasta, pastaDAO)
+                                                            viewModel.aoClicarSalvarNome()
                                                         }
                                                     ) {
                                                         Text("Salvar")
@@ -376,7 +320,7 @@ fun TelaItensPasta(navController: NavController,idPasta: Int = 0) {
                                                 dismissButton = {
                                                     TextButton(
                                                         onClick = {
-                                                            mostrarDialogoMudarNome = false
+                                                            viewModel.fecharDialogoMudarNome()
                                                         }
                                                     ) {
                                                         Text("Cancelar")
@@ -399,11 +343,7 @@ fun TelaItensPasta(navController: NavController,idPasta: Int = 0) {
                                                     .combinedClickable(
                                                         onClick = {},
                                                         onLongClick = {
-
-                                                            CoroutineScope(Dispatchers.IO).launch{
-                                                                privacidadePasta = !privacidadePasta
-                                                                alterarVisibilidade(pastaAtual, privacidadePasta, pastaDAO)
-                                                            }
+                                                            viewModel.aoClicarAlterarVisibilidade()
                                                             Toast.makeText(
                                                                 context,
                                                                 "Visibilidade da pasta alterada!",
@@ -415,17 +355,17 @@ fun TelaItensPasta(navController: NavController,idPasta: Int = 0) {
                                                 horizontalArrangement = Arrangement.SpaceBetween,
                                             ) {
                                                 gerarBlocoIcone(x = 23, y = 5,
-                                                    icon = painterResource( if(privacidadePasta) R.drawable.pasta_privada else R.drawable.pasta_publica)
+                                                    icon = painterResource( uiState.iconePasta)
                                                 )
 
                                                 Text(
-                                                    text = if(privacidadePasta) "Pasta privada" else "Pasta pública",
+                                                    text = uiState.textoPrivacidade,
                                                     color = Color.White,
                                                 )
                                             }
 
                                             Text(
-                                                text = " • $totalPinsPasta Pins",
+                                                text = " • ${uiState.totalPinsPasta} Pins",
                                                 color = Color.LightGray,
                                             )
                                         }
@@ -445,25 +385,19 @@ fun TelaItensPasta(navController: NavController,idPasta: Int = 0) {
                                         30,
                                         5,
                                         icon = painterResource(R.drawable.excluir),
-                                        onClick = {
-                                            mostrarDialogoExcluir = true
-                                        }
+                                        onClick = { viewModel.abrirDialogoExcluir() }
                                     )
 
 
-                                    if (mostrarDialogoExcluir) {
+                                    if (uiState.mostrarDialogoExcluir) {
                                         AlertDialog(
-                                            onDismissRequest = { mostrarDialogoExcluir = false },
+                                            onDismissRequest = { viewModel.fecharDialogoExcluir() },
                                             title = { Text("Excluir pasta") },
                                             text = { Text("Tem certeza de que deseja excluir essa pasta?") },
                                             confirmButton = {
                                                 TextButton(
                                                     onClick = {
-                                                        mostrarDialogoExcluir = false
-
-                                                        CoroutineScope(Dispatchers.IO).launch {
-                                                            excluirPasta(pastaAtual, pastaDAO)
-                                                        }
+                                                       viewModel.aoClicarExcluirPasta()
 
                                                         Toast.makeText(
                                                             context,
@@ -479,7 +413,7 @@ fun TelaItensPasta(navController: NavController,idPasta: Int = 0) {
                                             },
                                             dismissButton = {
                                                 TextButton(
-                                                    onClick = { mostrarDialogoExcluir = false }
+                                                    onClick = { viewModel.fecharDialogoExcluir() }
                                                 ) {
                                                     Text("Cancelar")
                                                 }
@@ -493,8 +427,7 @@ fun TelaItensPasta(navController: NavController,idPasta: Int = 0) {
                             //cria lista das imagens
                             val colunaEsquerda = mutableListOf<Pin>()
                             val colunaDireita = mutableListOf<Pin>()
-//                            val pinsDaPasta = Dados.pins.filter { pin -> pin.id in pasta.pins }.reversed()
-                            organizaImagensColuna(pins, colunaEsquerda, colunaDireita)
+                            uiState.organizaImagensColuna(uiState.pins, colunaEsquerda, colunaDireita)
 
 
                             //área das imagens
@@ -517,17 +450,9 @@ fun TelaItensPasta(navController: NavController,idPasta: Int = 0) {
                                         val proporcao = item.largura.toFloat() / item.altura.toFloat()
 
                                         gerarBlocoImagem(item, proporcao,
-                                            onClick = {imagemAmpliada = item},
+                                            onClick = {viewModel.aoClicarAmpliarImagem(item)},
                                             onLongClick = {
-                                                CoroutineScope(Dispatchers.IO).launch {
-                                                    excluirPinDaPasta(
-                                                        item.id,
-                                                        idPasta,
-                                                        pastaDAO,
-                                                        pinDAO
-                                                    )
-                                                    atualizarPins(idPasta)
-                                                }
+                                                viewModel.aoClicarExcluirPin(item)
                                                 Toast.makeText(
                                                     context,
                                                     "Pin removido!!",
@@ -544,17 +469,9 @@ fun TelaItensPasta(navController: NavController,idPasta: Int = 0) {
                                         val proporcao = item.largura.toFloat() / item.altura.toFloat()
 
                                         gerarBlocoImagem(item, proporcao,
-                                            onClick = {imagemAmpliada = item},
+                                            onClick = {viewModel.aoClicarAmpliarImagem(item)},
                                             onLongClick = {
-                                                CoroutineScope(Dispatchers.IO).launch {
-                                                    excluirPinDaPasta(
-                                                        item.id,
-                                                        idPasta,
-                                                        pastaDAO,
-                                                        pinDAO
-                                                    )
-                                                    atualizarPins(idPasta)
-                                                }
+                                                viewModel.aoClicarExcluirPin(item)
                                                 Toast.makeText(
                                                     context,
                                                     "Pin removido!!",
@@ -569,9 +486,9 @@ fun TelaItensPasta(navController: NavController,idPasta: Int = 0) {
         }
 
         //amplia a imagem quando clicada
-        imagemAmpliada?.let{pin ->
+        uiState.imagemAmpliada?.let{pin ->
             Dialog(
-                onDismissRequest = { imagemAmpliada = null}
+                onDismissRequest = { viewModel.fecharImagemAmpliada() }
 
             ) {
                 Column(
@@ -586,9 +503,7 @@ fun TelaItensPasta(navController: NavController,idPasta: Int = 0) {
                         modifier = Modifier
                             .fillMaxWidth()
                             .heightIn(max = 450.dp)
-                            .clickable {
-                                imagemAmpliada = null
-                            },
+                            .clickable { viewModel.fecharImagemAmpliada() },
                         contentScale = ContentScale.Fit
                     )
 
@@ -607,37 +522,31 @@ fun TelaItensPasta(navController: NavController,idPasta: Int = 0) {
                         gerarBlocoIcone(
                             Color.Transparent, 30, 5,
                             icon = painterResource(R.drawable.editar),
-                            onClick = {
-                                novoTitulo = pin.titulo
-                                editandoPin = true
-                            }
+                            onClick = { viewModel.abrirEdicaoTitulo() }
                         )
                     }
                 }
             }
         }
-        if (editandoPin) {
+        if (uiState.editandoPin) {
             AlertDialog(
-                onDismissRequest = { editandoPin = false },
+                onDismissRequest = { viewModel.fecharEdicaoTitulo()},
                 title = { Text("Editar título") },
                 text = {
                     TextField(
-                        value = novoTitulo,
-                        onValueChange = { novoTitulo = it },
+                        value = uiState.novoTitulo,
+                        onValueChange = { viewModel.onTituloChange(it)},
                         singleLine = true
                     )
                 },
                 confirmButton = {
                     TextButton(onClick = {
-                        imagemAmpliada?.let { pin ->
-                            salvarTituloPin(pin, novoTitulo, pinDAO)
-                            imagemAmpliada = pin.copy(titulo = novoTitulo)
-                        }
-                        editandoPin = false
+                       viewModel.aoClicarSalvarTitulo()
+                        viewModel.fecharEdicaoTitulo()
                     }) { Text("Salvar") }
                 },
                 dismissButton = {
-                    TextButton(onClick = { editandoPin = false }) { Text("Cancelar") }
+                    TextButton(onClick = { viewModel.fecharEdicaoTitulo() }) { Text("Cancelar") }
                 }
             )
         }

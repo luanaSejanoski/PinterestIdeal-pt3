@@ -15,8 +15,7 @@ class PinRepository(
     suspend fun excluirPinDaPasta(pinId: Int, pastaId: Int) =
         pastaDAO.excluirPinPasta(pastaId, pinId)
 
-    suspend fun alterarTituloPin(novoTitulo: String, pin: Pin) {
-            pin.titulo = novoTitulo
+    suspend fun alterarTituloPin( pin: Pin) {
             pinDAO.editar(pin)
         }
 }

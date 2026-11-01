@@ -1,5 +1,7 @@
 package com.example.myapplication.ui.pesquisa
 
+
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.getValue
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image

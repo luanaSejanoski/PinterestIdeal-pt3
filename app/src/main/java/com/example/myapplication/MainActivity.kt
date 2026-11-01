@@ -8,9 +8,9 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.compose.rememberNavController
 import com.example.myapplication.data.local.AppDatabase
+import com.example.myapplication.data.local.carregarDadosBanco
+import com.example.myapplication.ui.componentes.AppNavigation
 import com.example.myapplication.ui.theme.MyApplicationTheme
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 
 class MainActivity : ComponentActivity() {
 
@@ -21,9 +21,7 @@ class MainActivity : ComponentActivity() {
             val context = LocalContext.current
 
             LaunchedEffect(Unit) {
-                withContext(Dispatchers.IO) {
                     carregarDadosBanco(AppDatabase.getDatabase(context))
-                }
             }
 
             MyApplicationTheme {

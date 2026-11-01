@@ -1,4 +1,4 @@
-package com.example.myapplication
+package com.example.myapplication.ui.pasta
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.BorderStroke
@@ -20,7 +20,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -34,51 +33,49 @@ import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
-import com.example.myapplication.data.Dados
+import com.example.myapplication.ui.componentes.BotaoVoltar
+import com.example.myapplication.ui.componentes.Rotas
 import com.example.myapplication.data.local.AppDatabase
-import com.example.myapplication.data.repository.criarPasta
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-
-@Preview(showBackground = true)
-@Composable
-fun PreviewCriarPasta() {
-    val navController = rememberNavController()
-
-    TelaCriarPasta(
-        navController = navController,
-
-        )
-}
+import com.example.myapplication.data.repository.PastaRepository
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TelaCriarPasta(navController: NavController, idUsuario: Int = 0){
+fun TelaCriarPasta(navController: NavController,
+                   idUsuario: Int = 0,
+                   viewModel: CriarPastaViewModel = viewModel(
+                       key = "$idUsuario",
+                       factory = CriarPastaViewModelFactory(
+                           PastaRepository(
+                               AppDatabase.getDatabase(LocalContext.current).pastaDAO()
+                           ),
+                           idUsuario
+                       )
+                   )
+){
 
-    val usuario = Dados.usuarios.find { it.id == idUsuario }?: return;
+//    val usuario = Dados.usuarios.find { it.id == idUsuario }?: return;
 
-    var nomePasta by remember { mutableStateOf("") }
-    var privado by remember { mutableStateOf(false) }
-    var nomeFocado by remember { mutableStateOf(false) }
+//    var nomePasta by remember { mutableStateOf("") }
+//    var privado by remember { mutableStateOf(false) }
+//    var nomeFocado by remember { mutableStateOf(false) }
+
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     val context = LocalContext.current
     val db = AppDatabase.getDatabase(context)
     val pastaDAO = db.pastaDAO()
-    var pastaCriada by remember { mutableStateOf(false) }
+//    var pastaCriada by remember { mutableStateOf(false) }
 
-    LaunchedEffect(pastaCriada) {
-        if(pastaCriada) navController.navigate(Rotas.HOME)
+    LaunchedEffect(uiState.pastaCriada) {
+        if(uiState.pastaCriada) navController.navigate(Rotas.HOME)
     }
 
 
@@ -96,8 +93,9 @@ fun TelaCriarPasta(navController: NavController, idUsuario: Int = 0){
                     .padding(horizontal = 5.dp, vertical = 20.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                BotaoVoltar(navController = navController,
-                    onClick = {navController.navigate(Rotas.HOME)})
+                BotaoVoltar(
+                    navController = navController,
+                    onClick = { navController.navigate(Rotas.HOME) })
 
                 Text(
                     text = "Criar uma Pasta",
@@ -155,14 +153,14 @@ fun TelaCriarPasta(navController: NavController, idUsuario: Int = 0){
                         shape = RoundedCornerShape(5.dp),
                         border = BorderStroke(
                             1.dp,
-                            if (nomeFocado) Color.Red else Color.White
+                            if (uiState.nomeFocado) Color.Red else Color.White
                         )
                     ) {
                         TextField(
-                            value = nomePasta,
-                            onValueChange = { nomePasta = it },
+                            value = uiState.nomePasta,
+                            onValueChange = { viewModel.onNomeChange(it)},
                             modifier = Modifier.onFocusChanged {
-                                nomeFocado = it.isFocused
+                                uiState.nomeFocado = it.isFocused
                             },
                             textStyle = LocalTextStyle.current.copy(
                                 color = Color.White
@@ -207,30 +205,17 @@ fun TelaCriarPasta(navController: NavController, idUsuario: Int = 0){
                         }
 
                             Switch(
-                                checked = privado,
-                                onCheckedChange = { privado = it }
+                                checked = uiState.privado,
+                                onCheckedChange = { viewModel.onPrivadoChange(it) }
                             )
-
-
                     }
                 }
 
 
                 BtnCriarPasta(
                     modifier = Modifier.align(Alignment.BottomCenter),
-                    onClick = {
-                       CoroutineScope(Dispatchers.IO).launch {
-                           criarPasta(
-                               privado = privado,
-                               nome = nomePasta,
-                               usuarioId = usuario.id,
-                               pastaDAO = pastaDAO
-                           )
-                       }
-                        pastaCriada = true
-                    },
-                    habilitado = nomePasta.isNotBlank()
-
+                    onClick = { viewModel.aoClicarCriarPasta(idUsuario) },
+                    habilitado = uiState.nomePasta.isNotBlank()
                 )
             }
         }

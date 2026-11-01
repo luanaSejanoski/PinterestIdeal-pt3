@@ -70,7 +70,7 @@ fun AppNavigation(navController: NavHostController) {
                     TelaItensPasta(navController, idPasta = idPasta)
                }
                composable(Rotas.PESQUISAR_PESSOAS){
-                   TelaPesquisa(navController)
+                    TelaPesquisa(navController)
                }
 
                composable(Rotas.CRIAR_PASTA){
