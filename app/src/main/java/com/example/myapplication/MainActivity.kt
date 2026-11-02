@@ -9,7 +9,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.compose.rememberNavController
 import com.example.myapplication.data.local.AppDatabase
 import com.example.myapplication.data.local.carregarDadosBanco
-import com.example.myapplication.ui.componentes.AppNavigation
 import com.example.myapplication.ui.theme.MyApplicationTheme
 
 class MainActivity : ComponentActivity() {

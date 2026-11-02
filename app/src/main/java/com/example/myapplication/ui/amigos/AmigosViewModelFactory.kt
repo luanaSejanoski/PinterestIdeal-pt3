@@ -11,9 +11,9 @@ class AmigosViewModelFactory (
 ) : ViewModelProvider.Factory {
 
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(PesquisaViewModel::class.java)) {
+        if (modelClass.isAssignableFrom(AmigosViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")
-            return PesquisaViewModel(
+            return AmigosViewModel(
                 repository,
                 idUsuario
             ) as T

@@ -47,6 +47,7 @@ android {
 
 dependencies {
     implementation("androidx.camera:camera-core:1.2.3")
+    implementation("androidx.compose.remote:remote-creation-core:1.0.0-alpha22")
     implementation("androidx.core:core-ktx:1.12.0")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.7.0")
     implementation("androidx.activity:activity-compose:1.8.2")

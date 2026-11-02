@@ -10,6 +10,7 @@ import androidx.compose.runtime.getValue
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.myapplication.R
+import com.example.myapplication.Rotas
 
 @Composable
 fun MenuInferior(navController: NavHostController) {
@@ -69,9 +70,9 @@ fun MenuInferior(navController: NavHostController) {
         )
 
         NavigationBarItem(
-            selected = rotaAtual == Rotas.MENSAGENS,
+            selected = rotaAtual == Rotas.VER_AMIGOS,
             onClick = {
-                navController.navigate(Rotas.MENSAGENS)
+                navController.navigate(Rotas.VER_AMIGOS)
             },
             icon = {
                 Icon(

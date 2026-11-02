@@ -1,209 +1,209 @@
-package com.example.myapplication.data.repository
-
-import android.util.Log
-import com.example.myapplication.data.local.Mensagem
-import com.example.myapplication.data.local.MensagemDAO
-import com.example.myapplication.data.local.Pasta
-import com.example.myapplication.data.local.PastaDAO
-import com.example.myapplication.data.local.PastaPin
-import com.example.myapplication.data.local.Pin
-import com.example.myapplication.data.local.PinDAO
-import com.example.myapplication.data.local.Usuario
-import com.example.myapplication.data.local.UsuarioAmigo
-import com.example.myapplication.data.local.UsuarioDAO
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.first
-
-suspend fun buscarPastas(pastaDAO: PastaDAO, usuarioId: Int): List<Pasta> {
-    return try {
-        pastaDAO.pastasDoUsuario(usuarioId).first()
-    } catch (e: Exception) {
-        Log.e("Erro ao buscar pastas...", "Msg ${e.message}")
-        emptyList()
-    }
-}
-
-suspend fun buscarPastaId(pastaDAO: PastaDAO, pastaId: Int): Pasta{
-    return try{
-        pastaDAO.buscarPorId(pastaId)
-    }catch (e: Exception){
-        Log.e("Erro ao buscar pastas...", "Msg ${e.message}")
-        throw e
-    }
-}
-
-suspend fun buscarPinsPasta(pastaDAO: PastaDAO, pastaId: Int) : List<Pin>{
-    return try{
-        pastaDAO.pinsDaPasta(pastaId).first()
-    }catch (e: Exception){
-        Log.e("Erro ao buscar os pins da pastas...", "Msg ${e.message}")
-        emptyList()
-    }
-
-}
-
-suspend fun contarPinsPasta(pastaDAO: PastaDAO, idPasta: Int): Int{
-    return try{
-        pastaDAO.contarPins(idPasta)
-    }catch (e: Exception){
-        Log.e("Erro ao contar os pins...", "Msg ${e.message}")
-    }
-}
-suspend fun buscarDoisUltimosPins(pastaDAO: PastaDAO, idPasta: Int): List<Pin> {
-    return try {
-        pastaDAO.doisUltimosPins(idPasta).first()
-    } catch (e: Exception) {
-        Log.e("Erro ao buscar pins...", "Msg ${e.message}")
-        emptyList()
-    }
-}
-
-suspend fun criarPasta(nome: String, privado: Boolean, usuarioId: Int, pastaDAO: PastaDAO){
-     try{
-        pastaDAO.criar(Pasta(nome = nome, statusPrivado = privado, usuarioId = usuarioId))
-    }catch (e: Exception){
-        Log.e("Erro ao criar pasta...", "Msg ${e.message}")
-    }
-}
-
-suspend fun excluirPasta(pasta: Pasta, pastaDAO: PastaDAO){
-    try {
-        pastaDAO.excluirLigacao(pasta.id)
-        pastaDAO.excluir(pasta)
-    }catch (e: Exception){
-        Log.e("Erro ao excluir pasta...", "Msg ${e.message}")
-    }
-}
-
-suspend fun atualizarPasta( pasta: Pasta, pastaDAO: PastaDAO){
-    try{
-        pastaDAO.atualizar(pasta)
-    }catch (e: Exception){
-        Log.e("Erro ao mudar o nome da pasta...", "Msg ${e.message}")
-    }
-}
-
-suspend fun adicionarPinNaPasta(pinId: Int, pastaId: Int, pastaDAO: PastaDAO){
-    try{
-        pastaDAO.vincular(PastaPin(pastaId, pinId))
-    }catch(e: Exception){
-        Log.e("Erro ao adicionar o pin na pasta...", "Msg ${e.message}")
-    }
-}
-
-//Operações Pin
-suspend fun adicionarPin(uri: String, largura: Int, altura: Int, pinDAO: PinDAO): Int{
-   return try {
-        pinDAO.adicionar(Pin(imagem = uri, largura = largura, altura = altura)).toInt()
-    }catch (e: Exception){
-        Log.e("Erro ao adicionar pin...", "Msg ${e.message}")
-    }
-}
-
-
-suspend fun excluirPinDaPasta(pinId: Int, pastaId: Int, pastaDAO: PastaDAO, pinDAO: PinDAO){
-    try{
-        pastaDAO.excluirPinPasta(pastaId, pinId)
-    }catch (e: Exception){
-        Log.e("Erro ao excluir o pin da pasta...", "Msg ${e.message}")
-
-    }
-}
-
-suspend fun alterarTituloPin(novoTitulo: String, pin: Pin, pinDAO: PinDAO){
-    try{
-        pin.titulo = novoTitulo
-        pinDAO.editar(pin)
-    }catch (e: Exception){
-        Log.e("Erro ao mudar o título do pin...", "Msg ${e.message}")
-
-    }
-}
-
-//operacoes usuarios
-suspend fun atualizarDadosUsuario(
-    usuarioDAO: UsuarioDAO,
-    usuario: Usuario,
-    nomeExibicao: String,
-    nomeUsuario: String,
-    biografia: String,
-    email: String,
-    fotoPerfil: String?
-) {
-    try {
-        val usuarioAtualizado = usuario.copy(
-            nomeExibicao = nomeExibicao,
-            nomeUsuario = nomeUsuario,
-            biografia = biografia,
-            email = email,
-            foto = fotoPerfil
-        )
-        usuarioDAO.atualizarUsuario(usuarioAtualizado)
-    } catch (e: Exception) {
-        Log.e("Erro ao atualizar usuário...", "Msg ${e.message}")
-    }
-}
-
- fun listarUsuarios(usuarioDAO: UsuarioRepository): Flow<List<Usuario>> {
-    return try {
-        usuarioDAO.listarTodosUsuarios().
-    } catch (e: Exception) {
-        Log.e("Erro ao listar usuários...", "Msg ${e.message}")
-        emptyList()
-    }
-}
-
-suspend fun buscarAmigosDoUsuario(usuarioDAO: UsuarioRepository, idUsuario: Int): List<Usuario> {
-    return try {
-        usuarioDAO.buscarAmigos(idUsuario)
-    } catch (e: Exception) {
-        Log.e("Erro ao buscar amigos...", "Msg ${e.message}")
-        emptyList()
-    }
-}
-suspend fun adicionarAmigoBanco(usuarioDAO: UsuarioRepository, usuarioId: Int, amigoId: Int) {
-    try {
-        val relacao = UsuarioAmigo(usuarioId = usuarioId, amigoId = amigoId)
-        usuarioDAO.adicionarAmigo(relacao)
-    } catch (e: Exception) {
-        Log.e("Erro ao adicionar amigo...", "Msg ${e.message}")
-    }
-}
-
-suspend fun buscarUsuarioPorId(usuarioDAO: UsuarioDAO, idUsuario: Int): Usuario? {
-   return try {
-        usuarioDAO.buscarUsuarioId(idUsuario)
-    } catch (e: Exception) {
-        Log.e("Erro ao buscar usuário por id...", "Msg ${e.message}")
-        throw e
-    }
-}
-
-suspend fun contarAmigosUsuario(usuarioDAO: UsuarioDAO, usuarioId: Int): Int{
-    return try{
-        usuarioDAO.contarAmigos(usuarioId)
-    }catch (e: Exception){
-        Log.e("Erro ao contar amigos...", "Msg ${e.message}")
-        0
-    }
-}
-
-suspend fun removerAmigoUsuario(usuarioDAO: UsuarioDAO, usuarioId: Int, amigoId: Int){
-     try{
-        usuarioDAO.removerAmigo(usuarioId, amigoId)
-    }catch (e: Exception){
-        Log.e("Erro ao remover amigo...", "Msg ${e.message}")
-
-    }
-}
-
-//MENSAGENS
- fun buscarConversa(mensagemDAO: MensagemDAO, usuarioId: Int, amigoId: Int): Flow<List<Mensagem>> {
-   return try{
-        mensagemDAO.buscar(usuarioId, amigoId)
-    }catch (e: Exception){
-        Log.e("Erro ao buscar conversa...", "Msg ${e.message}")
-        throw e
-    }
-}
-
+//package com.example.myapplication.data.repository
+//
+//import android.util.Log
+//import com.example.myapplication.data.local.Mensagem
+//import com.example.myapplication.data.local.MensagemDAO
+//import com.example.myapplication.data.local.Pasta
+//import com.example.myapplication.data.local.PastaDAO
+//import com.example.myapplication.data.local.PastaPin
+//import com.example.myapplication.data.local.Pin
+//import com.example.myapplication.data.local.PinDAO
+//import com.example.myapplication.data.local.Usuario
+//import com.example.myapplication.data.local.UsuarioAmigo
+//import com.example.myapplication.data.local.UsuarioDAO
+//import kotlinx.coroutines.flow.Flow
+//import kotlinx.coroutines.flow.first
+//
+//suspend fun buscarPastas(pastaDAO: PastaDAO, usuarioId: Int): List<Pasta> {
+//    return try {
+//        pastaDAO.pastasDoUsuario(usuarioId).first()
+//    } catch (e: Exception) {
+//        Log.e("Erro ao buscar pastas...", "Msg ${e.message}")
+//        emptyList()
+//    }
+//}
+//
+//suspend fun buscarPastaId(pastaDAO: PastaDAO, pastaId: Int): Pasta{
+//    return try{
+//        pastaDAO.buscarPorId(pastaId)
+//    }catch (e: Exception){
+//        Log.e("Erro ao buscar pastas...", "Msg ${e.message}")
+//        throw e
+//    }
+//}
+//
+//suspend fun buscarPinsPasta(pastaDAO: PastaDAO, pastaId: Int) : List<Pin>{
+//    return try{
+//        pastaDAO.pinsDaPasta(pastaId).first()
+//    }catch (e: Exception){
+//        Log.e("Erro ao buscar os pins da pastas...", "Msg ${e.message}")
+//        emptyList()
+//    }
+//
+//}
+//
+//suspend fun contarPinsPasta(pastaDAO: PastaDAO, idPasta: Int): Int{
+//    return try{
+//        pastaDAO.contarPins(idPasta)
+//    }catch (e: Exception){
+//        Log.e("Erro ao contar os pins...", "Msg ${e.message}")
+//    }
+//}
+//suspend fun buscarDoisUltimosPins(pastaDAO: PastaDAO, idPasta: Int): List<Pin> {
+//    return try {
+//        pastaDAO.doisUltimosPins(idPasta).first()
+//    } catch (e: Exception) {
+//        Log.e("Erro ao buscar pins...", "Msg ${e.message}")
+//        emptyList()
+//    }
+//}
+//
+//suspend fun criarPasta(nome: String, privado: Boolean, usuarioId: Int, pastaDAO: PastaDAO){
+//     try{
+//        pastaDAO.criar(Pasta(nome = nome, statusPrivado = privado, usuarioId = usuarioId))
+//    }catch (e: Exception){
+//        Log.e("Erro ao criar pasta...", "Msg ${e.message}")
+//    }
+//}
+//
+//suspend fun excluirPasta(pasta: Pasta, pastaDAO: PastaDAO){
+//    try {
+//        pastaDAO.excluirLigacao(pasta.id)
+//        pastaDAO.excluir(pasta)
+//    }catch (e: Exception){
+//        Log.e("Erro ao excluir pasta...", "Msg ${e.message}")
+//    }
+//}
+//
+//suspend fun atualizarPasta( pasta: Pasta, pastaDAO: PastaDAO){
+//    try{
+//        pastaDAO.atualizar(pasta)
+//    }catch (e: Exception){
+//        Log.e("Erro ao mudar o nome da pasta...", "Msg ${e.message}")
+//    }
+//}
+//
+//suspend fun adicionarPinNaPasta(pinId: Int, pastaId: Int, pastaDAO: PastaDAO){
+//    try{
+//        pastaDAO.vincular(PastaPin(pastaId, pinId))
+//    }catch(e: Exception){
+//        Log.e("Erro ao adicionar o pin na pasta...", "Msg ${e.message}")
+//    }
+//}
+//
+////Operações Pin
+//suspend fun adicionarPin(uri: String, largura: Int, altura: Int, pinDAO: PinDAO): Int{
+//   return try {
+//        pinDAO.adicionar(Pin(imagem = uri, largura = largura, altura = altura)).toInt()
+//    }catch (e: Exception){
+//        Log.e("Erro ao adicionar pin...", "Msg ${e.message}")
+//    }
+//}
+//
+//
+//suspend fun excluirPinDaPasta(pinId: Int, pastaId: Int, pastaDAO: PastaDAO, pinDAO: PinDAO){
+//    try{
+//        pastaDAO.excluirPinPasta(pastaId, pinId)
+//    }catch (e: Exception){
+//        Log.e("Erro ao excluir o pin da pasta...", "Msg ${e.message}")
+//
+//    }
+//}
+//
+//suspend fun alterarTituloPin(novoTitulo: String, pin: Pin, pinDAO: PinDAO){
+//    try{
+//        pin.titulo = novoTitulo
+//        pinDAO.editar(pin)
+//    }catch (e: Exception){
+//        Log.e("Erro ao mudar o título do pin...", "Msg ${e.message}")
+//
+//    }
+//}
+//
+////operacoes usuarios
+//suspend fun atualizarDadosUsuario(
+//    usuarioDAO: UsuarioDAO,
+//    usuario: Usuario,
+//    nomeExibicao: String,
+//    nomeUsuario: String,
+//    biografia: String,
+//    email: String,
+//    fotoPerfil: String?
+//) {
+//    try {
+//        val usuarioAtualizado = usuario.copy(
+//            nomeExibicao = nomeExibicao,
+//            nomeUsuario = nomeUsuario,
+//            biografia = biografia,
+//            email = email,
+//            foto = fotoPerfil
+//        )
+//        usuarioDAO.atualizarUsuario(usuarioAtualizado)
+//    } catch (e: Exception) {
+//        Log.e("Erro ao atualizar usuário...", "Msg ${e.message}")
+//    }
+//}
+//
+// fun listarUsuarios(usuarioDAO: UsuarioRepository): Flow<List<Usuario>> {
+//    return try {
+//        usuarioDAO.listarTodosUsuarios().
+//    } catch (e: Exception) {
+//        Log.e("Erro ao listar usuários...", "Msg ${e.message}")
+//        emptyList()
+//    }
+//}
+//
+//suspend fun buscarAmigosDoUsuario(usuarioDAO: UsuarioRepository, idUsuario: Int): List<Usuario> {
+//    return try {
+//        usuarioDAO.buscarAmigos(idUsuario)
+//    } catch (e: Exception) {
+//        Log.e("Erro ao buscar amigos...", "Msg ${e.message}")
+//        emptyList()
+//    }
+//}
+//suspend fun adicionarAmigoBanco(usuarioDAO: UsuarioRepository, usuarioId: Int, amigoId: Int) {
+//    try {
+//        val relacao = UsuarioAmigo(usuarioId = usuarioId, amigoId = amigoId)
+//        usuarioDAO.adicionarAmigo(relacao)
+//    } catch (e: Exception) {
+//        Log.e("Erro ao adicionar amigo...", "Msg ${e.message}")
+//    }
+//}
+//
+//suspend fun buscarUsuarioPorId(usuarioDAO: UsuarioDAO, idUsuario: Int): Usuario? {
+//   return try {
+//        usuarioDAO.buscarUsuarioId(idUsuario)
+//    } catch (e: Exception) {
+//        Log.e("Erro ao buscar usuário por id...", "Msg ${e.message}")
+//        throw e
+//    }
+//}
+//
+//suspend fun contarAmigosUsuario(usuarioDAO: UsuarioDAO, usuarioId: Int): Int{
+//    return try{
+//        usuarioDAO.contarAmigos(usuarioId)
+//    }catch (e: Exception){
+//        Log.e("Erro ao contar amigos...", "Msg ${e.message}")
+//        0
+//    }
+//}
+//
+//suspend fun removerAmigoUsuario(usuarioDAO: UsuarioDAO, usuarioId: Int, amigoId: Int){
+//     try{
+//        usuarioDAO.removerAmigo(usuarioId, amigoId)
+//    }catch (e: Exception){
+//        Log.e("Erro ao remover amigo...", "Msg ${e.message}")
+//
+//    }
+//}
+//
+////MENSAGENS
+// fun buscarConversa(mensagemDAO: MensagemDAO, usuarioId: Int, amigoId: Int): Flow<List<Mensagem>> {
+//   return try{
+//        mensagemDAO.buscar(usuarioId, amigoId)
+//    }catch (e: Exception){
+//        Log.e("Erro ao buscar conversa...", "Msg ${e.message}")
+//        throw e
+//    }
+//}
+//

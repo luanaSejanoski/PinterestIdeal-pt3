@@ -2,11 +2,12 @@ package com.example.myapplication.ui.perfil
 
 import com.example.myapplication.data.local.Usuario
 
-class EditarPerfilUiState(
+data class EditarPerfilUiState(
     val usuario: Usuario? = null,
     val nomeExibicao: String = "",
     val nomeUsuario: String = "",
     val biografia: String = "",
     val email: String = "",
-    val fotoPerfil: String? = null
+    val fotoPerfil: String? = null,
+    val edicaoFeita: Boolean = false
 )

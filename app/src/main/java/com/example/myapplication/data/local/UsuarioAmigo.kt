@@ -1,6 +1,6 @@
 package com.example.myapplication.data.local
 
-import androidx.room3.Entity
+import androidx.room.Entity
 
 @Entity(primaryKeys = ["usuarioId", "amigoId"])
 data class UsuarioAmigo (
