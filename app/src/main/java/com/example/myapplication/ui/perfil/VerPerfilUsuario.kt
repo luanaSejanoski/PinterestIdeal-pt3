@@ -65,26 +65,6 @@ fun TelaVerPerfilUsuario(
         Surface(modifier = Modifier.fillMaxSize(), color = Color(0xFF1e1e1e)) {}
         return
     }
-//
-//    val usuario = Dados.usuarios.find { it.id == idUsuario }?: return
-//
-//    val context = LocalContext.current
-//    val db = AppDatabase.getDatabase(context)
-//    val pastaDAO = db.pastaDAO()
-//    val usuarioDAO = db.usuarioDAO()
-//
-//    var pastasDoUsuario by remember { mutableStateOf<List<Pasta>>(emptyList()) }
-//    var totalAmigos by remember{mutableStateOf(0)}
-//
-//    LaunchedEffect(idUsuario) {
-//        pastasDoUsuario = withContext(Dispatchers.IO){
-//            buscarPastas(pastaDAO, idUsuario)
-//        }
-//
-//        totalAmigos = withContext(Dispatchers.IO){
-//            usuarioDAO.contarAmigos(idUsuario)
-//        }
-//    }
 
     Surface(
         modifier = Modifier.fillMaxSize(),

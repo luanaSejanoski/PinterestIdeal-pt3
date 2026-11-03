@@ -32,14 +32,16 @@ class TelaPerfilViewModel (
             pastaRepository.observarPastas(usuarioId = 0).collect {
                 recarregarPastas()
             }
+        }
 
-            viewModelScope.launch {
-                pastaRepository.observarLigacoes().collect {
-                    recarregarPastas()
-                }
+        viewModelScope.launch {
+            pastaRepository.observarLigacoes().collect {
+                recarregarPastas()
             }
         }
     }
+
+
 
     fun recarregarUsuario() {
         viewModelScope.launch {

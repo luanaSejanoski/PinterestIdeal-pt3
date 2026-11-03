@@ -28,9 +28,6 @@ interface UsuarioDAO {
     @Update
     suspend fun atualizarUsuario(usuario: Usuario)
 
-//    @Query("SELECT * FROM Usuario")
-//    suspend fun buscarTodosUsuarios(): List<Usuario>
-
     @Insert
     suspend fun adicionarAmigo(usuarioAmigo: UsuarioAmigo)
 

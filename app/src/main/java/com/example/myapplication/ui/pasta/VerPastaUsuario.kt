@@ -56,37 +56,8 @@ fun TelaVerPastaUsuario(navController: NavController,
                         )
 ) {
 
-//    val context = LocalContext.current
-//    val db = AppDatabase.getDatabase(context)
-//    val pastaDAO = db.pastaDAO()
-//    var pasta by remember {mutableStateOf<Pasta?>(null)}
-//
-//    var totalPinsPasta by remember { mutableStateOf(0) }
-//    var pins by remember { mutableStateOf<List<Pin>>(emptyList()) }
-
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-//
-//
-//    LaunchedEffect(idPasta) {
-//            val pastaEncontrada = withContext(Dispatchers.IO){
-//                buscarPastaId(pastaDAO, idPasta)
-//            }
-//
-//            val total = withContext(Dispatchers.IO){
-//                contarPinsPasta(pastaDAO, idPasta)
-//            }
-//
-//            val lista = withContext(Dispatchers.IO){
-//                buscarPinsPasta(pastaDAO, idPasta)
-//            }
-//
-//            pasta = pastaEncontrada
-//            totalPinsPasta = total
-//            pins = lista
-//        }
 
-
-//    val pastaAtual = uiState.pasta
     if (uiState.pasta == null) {
         Surface(modifier = Modifier.fillMaxSize(), color = Color.Transparent) {}
         return
@@ -108,10 +79,6 @@ fun TelaVerPastaUsuario(navController: NavController,
             )
         }
     ) { paddingValues ->
-
-//        var nomePasta by remember { mutableStateOf(pastaAtual.nome) }
-//        var imagemAmpliada by remember {mutableStateOf<Pin?>(null)}
-
 
         Surface(
             modifier = Modifier.fillMaxSize()

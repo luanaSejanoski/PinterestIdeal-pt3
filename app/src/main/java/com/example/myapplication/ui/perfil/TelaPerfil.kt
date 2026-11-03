@@ -77,19 +77,6 @@ fun gerarBotao(x: Float,
 @Composable
 fun gerarPasta(pasta: PastaUiModel, onclick: () -> Unit){
 
-//    var totalPinsPasta by remember { mutableStateOf(0) }
-//    var pins by remember { mutableStateOf<List<Pin>>(emptyList()) }
-//
-////    LaunchedEffect(pasta.id) {
-////        totalPinsPasta = contarPinsPasta(pastaDAO, pasta.id)
-////        pins = buscarDoisUltimosPins(pastaDAO, pasta.id)
-////
-////    }
-//
-//
-//    //pega a imagem dos dois ultimos pins
-//    val imagens = pins.map{pin -> pin.imagem}
-
     Column(
         modifier= Modifier.fillMaxHeight(),
         horizontalAlignment = Alignment.CenterHorizontally
@@ -164,34 +151,7 @@ fun TelaPerfil(navController: NavHostController,
                )
     ) {
 
-    //tds as variaveis vem daq
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-
-
-
-
-//    val context = LocalContext.current
-//    val db = AppDatabase.getDatabase(context)
-//    val pastaDAO = db.pastaDAO()
-//    val usuarioDAO = db.usuarioDAO()
-//    var usuario by remember { mutableStateOf<Usuario?>(null) }
-//
-//    var pastasDoUsuario by remember { mutableStateOf<List<Pasta>>(emptyList()) }
-//    var totalAmigos by remember{mutableStateOf(0)}
-
-//    LaunchedEffect(idUsuario) {
-//        usuario = withContext(Dispatchers.IO) {
-//            buscarUsuarioPorId(usuarioDAO, idUsuario)
-//        }
-//
-//        pastasDoUsuario = withContext(Dispatchers.IO) {
-//            buscarPastas(pastaDAO, idUsuario)
-//        }
-//
-//        totalAmigos = withContext(Dispatchers.IO) {
-//            contarAmigosUsuario(usuarioDAO, idUsuario)
-//        }
-//    }
 
     val usuarioAtual = uiState.usuario
 

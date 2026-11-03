@@ -175,30 +175,6 @@ fun TelaEditarPerfil(
     val context = LocalContext.current
 
 
-//    val db = remember { AppDatabase.getDatabase(context) }
-//    val usuarioDAO = remember { db.usuarioDAO() }
-//    val coroutineScope = rememberCoroutineScope()
-
-//    var usuario by remember { mutableStateOf<Usuario?>(null) }
-//
-//    var nomeExibicao by remember { mutableStateOf("") }
-//    var nomeUsuario by remember { mutableStateOf("") }
-//    var biografia by remember { mutableStateOf("") }
-//    var email by remember { mutableStateOf("") }
-//    var fotoPerfil by remember { mutableStateOf<String?>(null) }
-
-//    LaunchedEffect(idUsuario) {
-//        val usuarioBanco = buscarUsuarioPorId(usuarioDAO, idUsuario)
-//        if (usuarioBanco != null) {
-//            usuario = usuarioBanco
-//            nomeExibicao = usuarioBanco.nomeExibicao
-//            nomeUsuario = usuarioBanco.nomeUsuario
-//            biografia = usuarioBanco.biografia ?: ""
-//            email = usuarioBanco.email ?: ""
-//            fotoPerfil = usuarioBanco.foto
-//        }
-//    }
-
     val usuarioAtual = uiState.usuario
 
 

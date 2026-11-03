@@ -111,43 +111,6 @@ fun gerarBlocoImagem(
     }
 }
 
-
-
-//fun salvarNomePasta(
-//    pasta: Pasta,
-//    nomePasta: String,
-//    pastaDAO: PastaDAO
-//){
-//    CoroutineScope(Dispatchers.IO).launch {
-//        pasta.nome = nomePasta
-//        atualizarPasta(pasta, pastaDAO)
-//    }
-//}
-//
-//fun alterarVisibilidade(
-//    pasta: Pasta,
-//    privado: Boolean,
-//    pastaDAO: PastaDAO
-//){
-//    CoroutineScope(Dispatchers.IO).launch {
-//        pasta.statusPrivado = privado
-//        pasta.privado = privado
-//        atualizarPasta(pasta, pastaDAO)
-//    }
-//}
-//
-//fun salvarTituloPin(
-//    pin: Pin,
-//    tituloPin: String,
-//    pinDAO: PinDAO
-//){
-//    CoroutineScope(Dispatchers.IO).launch {
-//        alterarTituloPin(tituloPin, pin, pinDAO)
-//    }
-//}
-
-
-
 @SuppressLint("UnrememberedMutableState", "SuspiciousIndentation")
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
@@ -167,23 +130,11 @@ fun TelaItensPasta(navController: NavController,
                            )
                    )
 ){
-//
+
     val context = LocalContext.current
-//    val db = AppDatabase.getDatabase(context)
-//    val pastaDAO = db.pastaDAO()
-//    val pinDAO = db.pinDAO()
-//    var pasta by remember {mutableStateOf<Pasta?>(null)}
-
-
-//    var totalPinsPasta by remember { mutableStateOf(0) }
-//    var pins by remember { mutableStateOf<List<Pin>>(emptyList()) }
 
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-
-
-//
-//    val pastaAtual = uiState.pasta
     if (uiState.pasta == null) {
         Surface(modifier = Modifier.fillMaxSize(), color = Color.Transparent) {}
         return
@@ -207,17 +158,6 @@ fun TelaItensPasta(navController: NavController,
         }
     ) { paddingValues ->
 
-//        var nomePasta by remember { mutableStateOf(pastaAtual.nome) }
-//        var privacidadePasta by remember { mutableStateOf(pastaAtual.privado) }
-//
-//        var mostrarDialogoMudarNome by remember { mutableStateOf(false) }
-//        var mostrarDialogoExcluir by remember { mutableStateOf(false) }
-//        var novoNome by remember { mutableStateOf("") }
-//
-//
-//        var imagemAmpliada by remember {mutableStateOf<Pin?>(null)}
-//        var editandoPin by remember { mutableStateOf(false)}
-//        var novoTitulo by remember { mutableStateOf("") }
 
         val selecionarImagens = rememberLauncherForActivityResult(
             contract = ActivityResultContracts.OpenMultipleDocuments()

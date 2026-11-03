@@ -26,8 +26,6 @@ class VerPerfilUsuarioViewModel (
             _uiState.update {
                 it.copy(usuario = usuario)
             }
-            val totalAmigos = usuarioRepository.contarAmigosUsuario(usuarioId = idUsuario)
-//            totalAmigos = totalAmigos
 
             pastaRepository.buscarPastas(usuarioId = idUsuario).collect { pastas ->
                 val pastasUi = pastas.map { pasta ->
@@ -46,10 +44,3 @@ class VerPerfilUsuarioViewModel (
     }
 }
 
-//pastasDoUsuario = withContext(Dispatchers.IO){
-//    buscarPastas(pastaDAO, idUsuario)
-//}
-//
-//totalAmigos = withContext(Dispatchers.IO){
-//    usuarioDAO.contarAmigos(idUsuario)
-//}

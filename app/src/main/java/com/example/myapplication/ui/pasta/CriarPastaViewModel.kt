@@ -17,9 +17,7 @@ class CriarPastaViewModel(
     private val _uiState =  MutableStateFlow(CriarPastaUiState())
     val  uiState: StateFlow<CriarPastaUiState> = _uiState.asStateFlow()
 
-    init{
 
-    }
 
     fun onNomeChange(nome: String){
         _uiState.update {

@@ -61,18 +61,11 @@ fun TelaCriarPasta(navController: NavController,
                    )
 ){
 
-//    val usuario = Dados.usuarios.find { it.id == idUsuario }?: return;
-
-//    var nomePasta by remember { mutableStateOf("") }
-//    var privado by remember { mutableStateOf(false) }
-//    var nomeFocado by remember { mutableStateOf(false) }
 
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     val context = LocalContext.current
     val db = AppDatabase.getDatabase(context)
-    val pastaDAO = db.pastaDAO()
-//    var pastaCriada by remember { mutableStateOf(false) }
 
     LaunchedEffect(uiState.pastaCriada) {
         if(uiState.pastaCriada) navController.navigate(Rotas.HOME)

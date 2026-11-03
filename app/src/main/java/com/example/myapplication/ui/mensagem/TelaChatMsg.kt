@@ -185,9 +185,6 @@ fun TelaMsg(navController: NavController,
     }
 
 
-
-
-@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun CampoMsg(
     mensagem: String,

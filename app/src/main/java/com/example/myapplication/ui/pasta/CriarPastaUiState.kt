@@ -5,8 +5,5 @@ data class CriarPastaUiState(
     val privado: Boolean = false,
     var nomeFocado: Boolean = false,
     var pastaCriada: Boolean = false,
-){
-//    fun onNomePastaChange(novoNome: String) {
-//        _uiState.update { it.copy(nomePasta = novoNome) }
-//    }
-}
+)
+
