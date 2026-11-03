@@ -36,3 +36,7 @@ O **Pinterest Ideal** é um aplicativo Android inspirado no Pinterest, desenvolv
 ## 👩‍💻 Projeto acadêmico
 
 Desenvolvido para praticar programação Android com Kotlin e Jetpack Compose, explorando a criação de interfaces, navegação entre telas e gerenciamento de imagens.
+
+## Documentação - Parte 4
+
+https://docs.google.com/document/d/1PR-FergNwlOTHET1LwN-Vo95HF19vkKDWVgOpkqI0zw/edit?usp=sharing
