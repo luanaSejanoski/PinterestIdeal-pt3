@@ -54,19 +54,12 @@ import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import com.example.myapplication.ui.componentes.BotaoVoltar
 import com.example.myapplication.R
-import com.example.myapplication.data.local.Pasta
 import com.example.myapplication.data.local.AppDatabase
-import com.example.myapplication.data.local.PastaDAO
 import com.example.myapplication.data.local.Pin
-import com.example.myapplication.data.local.PinDAO
 import com.example.myapplication.data.repository.PastaRepository
 import com.example.myapplication.data.repository.PinRepository
-import com.example.myapplication.data.repository.alterarTituloPin
-import com.example.myapplication.data.repository.atualizarPasta
 import com.example.myapplication.gerarBloco
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
+
 
 @Composable
 fun gerarBlocoIcone(cor: Color? = null,
@@ -120,38 +113,38 @@ fun gerarBlocoImagem(
 
 
 
-fun salvarNomePasta(
-    pasta: Pasta,
-    nomePasta: String,
-    pastaDAO: PastaDAO
-){
-    CoroutineScope(Dispatchers.IO).launch {
-        pasta.nome = nomePasta
-        atualizarPasta(pasta, pastaDAO)
-    }
-}
-
-fun alterarVisibilidade(
-    pasta: Pasta,
-    privado: Boolean,
-    pastaDAO: PastaDAO
-){
-    CoroutineScope(Dispatchers.IO).launch {
-        pasta.statusPrivado = privado
-        pasta.privado = privado
-        atualizarPasta(pasta, pastaDAO)
-    }
-}
-
-fun salvarTituloPin(
-    pin: Pin,
-    tituloPin: String,
-    pinDAO: PinDAO
-){
-    CoroutineScope(Dispatchers.IO).launch {
-        alterarTituloPin(tituloPin, pin, pinDAO)
-    }
-}
+//fun salvarNomePasta(
+//    pasta: Pasta,
+//    nomePasta: String,
+//    pastaDAO: PastaDAO
+//){
+//    CoroutineScope(Dispatchers.IO).launch {
+//        pasta.nome = nomePasta
+//        atualizarPasta(pasta, pastaDAO)
+//    }
+//}
+//
+//fun alterarVisibilidade(
+//    pasta: Pasta,
+//    privado: Boolean,
+//    pastaDAO: PastaDAO
+//){
+//    CoroutineScope(Dispatchers.IO).launch {
+//        pasta.statusPrivado = privado
+//        pasta.privado = privado
+//        atualizarPasta(pasta, pastaDAO)
+//    }
+//}
+//
+//fun salvarTituloPin(
+//    pin: Pin,
+//    tituloPin: String,
+//    pinDAO: PinDAO
+//){
+//    CoroutineScope(Dispatchers.IO).launch {
+//        alterarTituloPin(tituloPin, pin, pinDAO)
+//    }
+//}
 
 
 
@@ -299,7 +292,7 @@ fun TelaItensPasta(navController: NavController,
 
                                                 text = {
                                                     TextField(
-                                                        value = uiState.nomePasta,
+                                                        value = uiState.novoNome,
                                                         onValueChange = {
                                                             viewModel.onNomeChange(it)
                                                         },

@@ -160,7 +160,7 @@ fun geraBotao(x: Float, texto: String, habilitado: Boolean,
 
 @Composable
 fun TelaEditarPerfil(
-    navController: NavController, idUsuario: Int = 0,
+    navController: NavController,
     viewModel: EditarPerfilViewModel = viewModel(
      factory = EditarPerfilViewModelFactory(
          UsuarioRepository (AppDatabase.getDatabase(LocalContext.current).usuarioDAO())
@@ -169,9 +169,11 @@ fun TelaEditarPerfil(
 )
 {
 
+
     //tds as variaveis vem daq
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val context = LocalContext.current
+
 
 //    val db = remember { AppDatabase.getDatabase(context) }
 //    val usuarioDAO = remember { db.usuarioDAO() }
@@ -197,7 +199,13 @@ fun TelaEditarPerfil(
 //        }
 //    }
 
-    val usuarioAtual = uiState.usuario ?: return
+    val usuarioAtual = uiState.usuario
+
+
+    if (usuarioAtual == null) {
+        Surface(modifier = Modifier.fillMaxSize(), color = Color(0xFF1e1e1e)) {}
+        return
+    }
 
     //seleciona foto da galeria
     val selecionarImagem = rememberLauncherForActivityResult(
@@ -266,14 +274,18 @@ fun TelaEditarPerfil(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        val imagemPerfil = if (uiState.fotoPerfil != null && uiState.fotoPerfil != "") {
+                            uiState.fotoPerfil!!.toUri()
+                        } else {
+                            R.drawable.foto_perfil_editar
+                        }
+
                         gerarConteudoBloco(
                             x = 150,
                             y = 5,
                             cor = Color.Red,
                             raio = 75,
-                            imagem =
-                                if (!uiState.fotoPerfil?.isNullOrEmpty()!!) (uiState.fotoPerfil as String).toUri()
-                                else R.drawable.foto_perfil_editar
+                            imagem = imagemPerfil
                         )
                         geraBotao(0.2f, "Editar", habilitado = true,
                             onclick = {selecionarImagem.launch(arrayOf("image/*"))}
@@ -318,9 +330,4 @@ fun TelaEditarPerfil(
             }
         }
     }
-}
-
-@Composable
-fun LauchedEffect(x0: Boolean, content: @Composable () -> Unit) {
-    TODO("Not yet implemented")
 }

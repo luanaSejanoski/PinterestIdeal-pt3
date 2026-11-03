@@ -5,6 +5,7 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface PinDAO {
@@ -18,5 +19,5 @@ interface PinDAO {
     suspend fun editar(pin: Pin)
 
     @Query("SELECT COUNT(*) FROM Pin")
-    suspend fun contarPins(): Int
+     fun contarPins(): Flow<Int>
 }

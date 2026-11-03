@@ -41,8 +41,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.example.myapplication.Rotas
 import com.example.myapplication.ui.componentes.BotaoVoltar
-import com.example.myapplication.ui.componentes.Rotas
 import com.example.myapplication.data.local.AppDatabase
 import com.example.myapplication.data.repository.PastaRepository
 

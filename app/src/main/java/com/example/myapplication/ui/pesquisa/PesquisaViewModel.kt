@@ -7,6 +7,7 @@ import com.example.myapplication.data.repository.UsuarioRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -20,9 +21,30 @@ class PesquisaViewModel(
     val uiState: StateFlow<PesquisaUiState> = _uiState.asStateFlow()
 
     init {
+
+        viewModelScope.launch {
+            val usuario = repository.buscarUsuarioPorId(idUsuario)
+            _uiState.update { it.copy(usuario = usuario) }
+        }
+
+
         viewModelScope.launch {
             repository.listarUsuarios().collect { usuarios ->
-                _uiState.update { it.copy(listaUsuarios = usuarios) }
+                _uiState.update {
+                    it.copy(
+                        listaUsuarios = usuarios
+                    )
+                }
+            }
+        }
+
+        viewModelScope.launch {
+            repository.buscarAmigosDoUsuario(idUsuario).collect { amigos ->
+                _uiState.update {
+                    it.copy(
+                        idsAmigos = amigos.map { amigo -> amigo.id }
+                    )
+                }
             }
         }
     }

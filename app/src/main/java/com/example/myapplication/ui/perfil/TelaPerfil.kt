@@ -35,6 +35,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
@@ -48,6 +49,7 @@ import androidx.navigation.NavHostController
 import com.example.myapplication.data.local.AppDatabase
 import com.example.myapplication.data.repository.PastaRepository
 import com.example.myapplication.data.repository.UsuarioRepository
+import com.example.myapplication.ui.perfil.PastaUiModel
 import com.example.myapplication.ui.perfil.TelaPerfilViewModel
 
 @Composable
@@ -70,16 +72,6 @@ fun gerarBotao(x: Float,
     }
 }
 
-//@Preview(showBackground = true)
-//@Composable
-//fun PreviewTelaPerfil() {
-//    val navController = rememberNavController()
-//
-//    TelaPerfil(
-//        navController = navController,
-//
-//        )
-//}
 
 @SuppressLint("CoroutineCreationDuringComposition")
 @Composable
@@ -174,6 +166,9 @@ fun TelaPerfil(navController: NavHostController,
 
     //tds as variaveis vem daq
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
+
+
 
 //    val context = LocalContext.current
 //    val db = AppDatabase.getDatabase(context)

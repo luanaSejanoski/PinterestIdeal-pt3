@@ -225,7 +225,7 @@ fun TelaVerPerfilUsuario(
                                                 navController.navigate(
                                                     Rotas.VER_PASTA_USUARIO.replace(
                                                         "{idPasta}",
-                                                        pastaUi.id.toString()
+                                                        pastaUi.pasta.id.toString()
                                                     )
                                                 )
                                             })

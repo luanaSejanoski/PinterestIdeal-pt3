@@ -138,7 +138,7 @@ fun TelaVerPastaUsuario(navController: NavController,
                             Column() {
                                 Row() {
                                     Text(
-                                        text = "$uiState.nomePasta",
+                                        text = uiState.pasta?.nome?: "",
                                         color = Color.White,
                                         fontSize = 20.sp
                                     )

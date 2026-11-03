@@ -25,7 +25,7 @@ class UsuarioRepository(
         return usuarioDAO.buscarUsuarioId(idUsuario)
     }
 
-    suspend fun contarAmigosUsuario(usuarioId: Int): Int {
+     fun contarAmigosUsuario(usuarioId: Int): Flow<Int> {
         return usuarioDAO.contarAmigos(usuarioId)
     }
 

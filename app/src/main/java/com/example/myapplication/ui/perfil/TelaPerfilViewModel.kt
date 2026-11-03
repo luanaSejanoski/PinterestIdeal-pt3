@@ -19,48 +19,43 @@ class TelaPerfilViewModel (
     val uiState: StateFlow<PerfilUiState> = _uiState.asStateFlow()
 
     init {
+        recarregarUsuario()
+
         viewModelScope.launch {
-            val usuario = usuarioRepository.buscarUsuarioPorId(idUsuario = 0)
-            val totalAmigos = usuarioRepository.contarAmigosUsuario(usuarioId = 0)
-
-            _uiState.update {
-                it.copy(
-                    usuario = usuario,
-                    totalAmigos = totalAmigos
-                )
-            }
-
-//            pastaRepository.buscarPastas(usuarioId = 0).collect {
-//                    pastas -> _uiState.update { it.copy(pastasDoUsuario = pastas) }
-//            }
-
-            pastaRepository.buscarPastas(usuarioId = 0).collect { pastas ->
-                val pastasUi = pastas.map { pasta ->
-                    PastaUiModel(
-                        pasta = pasta,
-                        totalPins = pastaRepository.contarPinsPasta(pasta.id),
-                        imagens =
-                            pastaRepository.buscarDoisUltimosPins(pasta.id)
-                            .first().map { pin -> pin.imagem }
-                    )
+            usuarioRepository.contarAmigosUsuario(usuarioId = 0)
+                .collect { totalAmigos ->
+                    _uiState.update { it.copy(totalAmigos = totalAmigos) }
                 }
+        }
 
-                _uiState.update { it.copy(pastasDoUsuario = pastasUi) }
+        viewModelScope.launch {
+            pastaRepository.observarLigacoes().collect {
+                recarregarPastas()
             }
         }
     }
 
+    fun recarregarUsuario() {
+        viewModelScope.launch {
+            val usuario = usuarioRepository.buscarUsuarioPorId(idUsuario = 0)
+            _uiState.update { it.copy(usuario = usuario) }
+        }
+    }
 
+    fun recarregarPastas() {
+        viewModelScope.launch {
+            val pastas = pastaRepository.buscarPastas(usuarioId = 0).first()
+
+            val pastasUi = pastas.map { pasta ->
+                PastaUiModel(
+                    pasta = pasta,
+                    totalPins = pastaRepository.contarPinsPasta(pasta.id),
+                    imagens = pastaRepository.buscarDoisUltimosPins(pasta.id)
+                        .first().map { pin -> pin.imagem }
+                )
+            }
+
+            _uiState.update { it.copy(pastasDoUsuario = pastasUi) }
+        }
+    }
 }
-
-//usuario = withContext(Dispatchers.IO) {
-//    buscarUsuarioPorId(usuarioDAO, idUsuario)
-//}
-//
-//pastasDoUsuario = withContext(Dispatchers.IO) {
-//    buscarPastas(pastaDAO, idUsuario)
-//}
-//
-//totalAmigos = withContext(Dispatchers.IO) {
-//    contarAmigosUsuario(usuarioDAO, idUsuario)
-//}

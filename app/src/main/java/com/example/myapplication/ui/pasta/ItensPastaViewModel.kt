@@ -22,7 +22,13 @@ class ItensPastaViewModel(
         init{
             viewModelScope.launch {
                 val pasta = repository.buscarPastaId(idPasta)
-                _uiState.update { it.copy(pasta = pasta) }
+                _uiState.update {
+                    it.copy(
+                        pasta = pasta,
+                        privacidadePasta = pasta.statusPrivado,
+                        nomePasta = pasta.nome,
+                        novoNome = pasta.nome
+                    ) }
 
                 repository.buscarPinsPasta(idPasta).collect {
                         listaPins ->
@@ -52,7 +58,7 @@ class ItensPastaViewModel(
 
             fun onNomeChange(novoNome: String){
                 _uiState.update {
-                    it.copy(nomePasta =  novoNome)
+                    it.copy(novoNome =  novoNome)
                 }
             }
 
@@ -61,12 +67,15 @@ class ItensPastaViewModel(
                 val pastaAtual = state.pasta ?: return
                 val pastaAtualizada = pastaAtual.copy(nome = state.novoNome)
 
+                val novoNome = state.novoNome
+
                 viewModelScope.launch {
                     repository.atualizarPasta(pastaAtualizada)
 
                     _uiState.update {
                         it.copy(
                             pasta = pastaAtualizada,
+                            nomePasta = novoNome,
                             mostrarDialogoMudarNome = false
                         )
                     }
@@ -90,7 +99,11 @@ class ItensPastaViewModel(
                 viewModelScope.launch {
                     repository.atualizarPasta(pastaAtualizada)
 
-                    _uiState.update { it.copy(pasta = pastaAtualizada) }
+                    _uiState.update {
+                        it.copy(
+                            pasta = pastaAtualizada,
+                            privacidadePasta = pastaAtualizada.statusPrivado
+                        ) }
                 }
             }
 
@@ -98,7 +111,7 @@ class ItensPastaViewModel(
                 _uiState.update {
                     it.copy(
                         novoNome = it.pasta?.nome.orEmpty(),
-                        mostrarDialogoMudarNome = true
+                        mostrarDialogoExcluir = true
                     )
                 }
             }

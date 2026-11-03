@@ -37,6 +37,7 @@ class PastaRepository(
     suspend fun adicionarPinNaPasta(pinId: Int, pastaId: Int) =
         pastaDAO.vincular(PastaPin(pastaId, pinId))
 
+    fun observarLigacoes() = pastaDAO.observarLigacoes()
     }
 
 

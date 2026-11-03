@@ -8,7 +8,9 @@ data class PastaUiModel(
     val pasta: Pasta,
     val totalPins: Int = 0,
     val imagens: List<String> = emptyList()
-)
+) {
+}
+
 data class PerfilUiState(
     val usuario: Usuario? = null,
     val pastasDoUsuario: List<PastaUiModel> = emptyList(),

@@ -35,7 +35,7 @@ interface UsuarioDAO {
     suspend fun adicionarAmigo(usuarioAmigo: UsuarioAmigo)
 
     @Query("SELECT  COUNT(DISTINCT amigoId) FROM UsuarioAmigo WHERE usuarioId = :idUsuario")
-    suspend fun contarAmigos(idUsuario: Int) : Int
+     fun contarAmigos(idUsuario: Int) : Flow<Int>
 
     @Query("""
     SELECT u.* FROM Usuario u

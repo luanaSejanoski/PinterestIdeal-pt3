@@ -62,4 +62,7 @@ interface PastaDAO {
     @Update
     suspend fun atualizar(pasta: Pasta)
 
+    @Query("SELECT COUNT(*) FROM PastaPin")
+    fun observarLigacoes(): Flow<Int>
+
 }

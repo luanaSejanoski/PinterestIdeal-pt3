@@ -1,6 +1,7 @@
 package com.example.myapplication.data.local
 
 import android.util.Log
+import kotlinx.coroutines.flow.first
 
 suspend fun carregarDadosBanco(db: AppDatabase) {
     try {
@@ -25,7 +26,7 @@ suspend fun carregarDadosBanco(db: AppDatabase) {
         }
 
         // Carrega os Pins apenas se a tabela estiver vazia
-        if (pinDAO.contarPins() == 0) {
+        if (pinDAO.contarPins().first() == 0) {
             Dados.pins.forEach {
                 pinDAO.adicionar(it)
             }
