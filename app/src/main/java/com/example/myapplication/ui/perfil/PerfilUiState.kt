@@ -6,6 +6,7 @@ import kotlinx.coroutines.flow.Flow
 
 data class PastaUiModel(
     val pasta: Pasta,
+    val nomePasta: String,
     val totalPins: Int = 0,
     val imagens: List<String> = emptyList()
 ) {

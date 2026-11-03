@@ -15,7 +15,7 @@ class TelaPerfilViewModel (
     private val usuarioRepository: UsuarioRepository,
     private val pastaRepository: PastaRepository
 ) : ViewModel() {
-    private  val _uiState = MutableStateFlow(PerfilUiState())
+    private val _uiState = MutableStateFlow(PerfilUiState())
     val uiState: StateFlow<PerfilUiState> = _uiState.asStateFlow()
 
     init {
@@ -29,8 +29,14 @@ class TelaPerfilViewModel (
         }
 
         viewModelScope.launch {
-            pastaRepository.observarLigacoes().collect {
+            pastaRepository.observarPastas(usuarioId = 0).collect {
                 recarregarPastas()
+            }
+
+            viewModelScope.launch {
+                pastaRepository.observarLigacoes().collect {
+                    recarregarPastas()
+                }
             }
         }
     }
@@ -46,9 +52,11 @@ class TelaPerfilViewModel (
         viewModelScope.launch {
             val pastas = pastaRepository.buscarPastas(usuarioId = 0).first()
 
+
             val pastasUi = pastas.map { pasta ->
                 PastaUiModel(
                     pasta = pasta,
+                    nomePasta = pasta.nome,
                     totalPins = pastaRepository.contarPinsPasta(pasta.id),
                     imagens = pastaRepository.buscarDoisUltimosPins(pasta.id)
                         .first().map { pin -> pin.imagem }

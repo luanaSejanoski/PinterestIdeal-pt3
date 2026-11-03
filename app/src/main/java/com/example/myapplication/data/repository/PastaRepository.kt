@@ -38,6 +38,9 @@ class PastaRepository(
         pastaDAO.vincular(PastaPin(pastaId, pinId))
 
     fun observarLigacoes() = pastaDAO.observarLigacoes()
+
+    fun observarPastas(usuarioId: Int) = pastaDAO.observarPastas(usuarioId)
+
     }
 
 

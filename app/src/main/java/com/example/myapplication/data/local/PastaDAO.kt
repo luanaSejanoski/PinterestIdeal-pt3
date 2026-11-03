@@ -65,4 +65,7 @@ interface PastaDAO {
     @Query("SELECT COUNT(*) FROM PastaPin")
     fun observarLigacoes(): Flow<Int>
 
+    @Query("SELECT * FROM Pasta WHERE usuarioId = :usuarioId")
+    fun observarPastas(usuarioId: Int): Flow<List<Pasta>>
+
 }

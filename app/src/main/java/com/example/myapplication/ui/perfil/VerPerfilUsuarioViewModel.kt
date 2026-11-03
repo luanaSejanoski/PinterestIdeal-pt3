@@ -33,6 +33,7 @@ class VerPerfilUsuarioViewModel (
                 val pastasUi = pastas.map { pasta ->
                     PastaUiModel(
                         pasta = pasta,
+                        nomePasta = pasta.nome,
                         totalPins = pastaRepository.contarPinsPasta(pasta.id),
                         imagens = pastaRepository.buscarDoisUltimosPins(pasta.id)
                             .first().map { pin -> pin.imagem }

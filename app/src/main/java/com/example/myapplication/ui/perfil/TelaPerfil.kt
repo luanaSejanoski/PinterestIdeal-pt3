@@ -139,7 +139,7 @@ fun gerarPasta(pasta: PastaUiModel, onclick: () -> Unit){
 
         Column(modifier = Modifier.width(180.dp)) {
             Text(
-                text = "${pasta.pasta.nome}",
+                text = pasta.nomePasta,
                 color = Color.White,
                 fontSize = 14.sp
             )
